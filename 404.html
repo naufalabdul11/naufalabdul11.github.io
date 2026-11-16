@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page not found – Naufal Abdul Farid</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>
+/* The portfolio is one page with sections in the address after "#". An address like /projects/thesis is sent to /#projects/thesis. */
+(function(){
+  var p = location.pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '').split('/');
+  var V = {home:1, about:1, projects:1, models:1, model:1, experience:1, skills:1, resume:1};
+  if (V[p[0]]) location.replace('/#' + p.slice(0, 2).join('/'));
+})();
+</script>
+<style>
+@font-face{ font-family:'Archivo'; font-style:normal; font-display:swap; font-weight:100 900; font-stretch:62% 125%; src:url(/fonts/archivo-latin.woff2) format('woff2'); }
+:root{ --paper:#F3F7FC; --ink:#0C1B2E; --ink-2:#4A5D75; --accent:#1F5FAE; --rule:#D3DFEC; }
+@media (prefers-color-scheme: dark){ :root{ --paper:#08121F; --ink:#E4ECF6; --ink-2:#9DB1C9; --accent:#6EB2F2; --rule:#1E3049; } }
+*{ box-sizing:border-box; }
+body{ margin:0; min-height:100vh; display:grid; place-items:center; padding:24px; background:var(--paper); color:var(--ink); font:1.0625rem/1.55 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+main{ max-width:34rem; }
+h1{ margin:0 0 12px; font-size:clamp(1.9rem, 6vw, 2.5rem); font-stretch:125%; font-weight:800; letter-spacing:-.014em; line-height:1.08; }
+p{ margin:0 0 12px; color:var(--ink-2); }
+a.btn{ display:inline-block; margin-top:10px; padding:10px 18px; border-radius:9px; background:var(--accent); color:var(--paper); font-weight:600; text-decoration:none; }
+a.btn:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>This page does not exist</h1>
+  <p>The address may be mistyped, or the page may have moved. The portfolio and all of its sections start from the home page.</p>
+  <p lang="id">Alamat ini tidak ditemukan. Seluruh isi portofolio dapat dibuka dari halaman utama.</p>
+  <a class="btn" href="/">Go to the home page</a>
+</main>
+</body>
+</html>
