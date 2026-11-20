@@ -971,8 +971,9 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
 @keyframes heroUp{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
 @keyframes heroCard{ from{ opacity:0; transform:translateY(16px) scale(.985); } to{ opacity:1; transform:none; } }
 .hero-intro .hero-text > *{ animation:heroUp .5s var(--ease) both; }
-.hero-intro .hero-text > *:nth-child(3){ animation-delay:.06s; } .hero-intro .hero-text > *:nth-child(4){ animation-delay:.12s; }
-.hero-intro .hero-text > *:nth-child(5){ animation-delay:.18s; } .hero-intro .hero-text > *:nth-child(6){ animation-delay:.24s; }
+.hero-intro .hero-text > *:nth-child(2){ animation-delay:.04s; } .hero-intro .hero-text > *:nth-child(3){ animation-delay:.08s; }
+.hero-intro .hero-text > *:nth-child(4){ animation-delay:.12s; } .hero-intro .hero-text > *:nth-child(5){ animation-delay:.16s; }
+.hero-intro .hero-text > *:nth-child(6){ animation-delay:.2s; } .hero-intro .hero-text > *:nth-child(7){ animation-delay:.24s; } .hero-intro .hero-text > *:nth-child(8){ animation-delay:.28s; }
 .hero-intro .portrait{ animation:heroCard .6s .1s var(--ease) both; }
 .portrait{ transition:transform .35s ease, box-shadow .35s ease; transform-style:preserve-3d; }
 .portrait.tilting{ transition:transform .08s linear, box-shadow .35s ease; box-shadow:0 30px 60px rgba(12,27,46,.25); }
@@ -998,6 +999,125 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
 #toTop.show{ opacity:1; transform:none; pointer-events:auto; }
 #toTop:hover{ background:var(--accent-soft); }
 #toTop svg{ width:20px; height:20px; }
+/* ---- effects: a dot field behind the hero, a status line, rotating focus words, sliding filter pills, menu underlines, a tools strip ---- */
+#view-home{ position:relative; }
+.hero-dots{ position:absolute; left:0; top:0; width:100%; height:0; pointer-events:none; z-index:0;
+  -webkit-mask-image:linear-gradient(to bottom, #000 55%, transparent); mask-image:linear-gradient(to bottom, #000 55%, transparent); }
+#view-home > .hero{ position:relative; z-index:1; }
+.status{ display:inline-flex; align-items:center; gap:9px; margin:0 0 16px; padding:5px 13px 5px 11px; border:1px solid var(--rule); border-radius:999px;
+  background:color-mix(in srgb, var(--surface) 88%, transparent); color:var(--ink-2); font-size:var(--fs-xs); font-weight:560; line-height:1.35; }
+.hero-text > p.status{ max-width:none; }
+.status::before{ content:""; flex:none; width:8px; height:8px; border-radius:50%; background:#22A06B; animation:statusPulse 2.2s ease-out infinite; }
+@keyframes statusPulse{ 0%{ box-shadow:0 0 0 0 rgba(34,160,107,.55); } 70%, 100%{ box-shadow:0 0 0 8px rgba(34,160,107,0); } }
+.name{ margin-bottom:12px; }
+.hero-role{ margin:0 0 20px; font-size:var(--fs-h3); font-weight:520; color:var(--ink-2); }
+.role-swap{ display:inline-grid; vertical-align:top; overflow:hidden; color:var(--accent); font-weight:700; }
+.role-swap > span{ grid-area:1 / 1; white-space:nowrap; opacity:0; transform:translateY(100%); transition:transform .55s var(--ease), opacity .4s ease; }
+.role-swap > span.on{ opacity:1; transform:none; }
+.role-swap > span.out{ opacity:0; transform:translateY(-100%); }
+@media (max-width:700px){
+  .hero-text > .status{ grid-column:1 / -1; grid-row:1; justify-self:start; margin:0; }
+  .name, .portrait{ grid-row:2; }
+  .hero-role{ margin:0; }
+}
+/* filter chips: one background that slides to the chosen chip */
+.chips.has-pill{ position:relative; }
+.chips.has-pill > .chip{ position:relative; z-index:1; background:transparent; transition:color .25s ease, border-color .25s ease, background-color .2s ease; }
+.chips.has-pill > .chip:hover{ background:color-mix(in srgb, var(--band) 75%, transparent); }
+.chips.has-pill > .chip[aria-pressed="true"]{ background:transparent; border-color:transparent; }
+.chip-pill{ position:absolute; left:0; top:0; z-index:0; width:0; height:0; border-radius:8px; background:var(--ink); pointer-events:none;
+  transition:transform .34s var(--ease), width .34s var(--ease), height .34s var(--ease), opacity .2s ease; }
+/* menu: an underline that grows from the left */
+@media (min-width:901px) and (hover:hover){
+  .tabs a{ position:relative; }
+  .tabs a::after{ content:""; position:absolute; left:11px; right:11px; bottom:3px; height:2px; border-radius:2px; background:currentColor; transform:scaleX(0); transform-origin:0 50%; transition:transform .28s var(--ease); }
+  .tabs a:not([aria-current="page"]):hover{ background:none; }
+  .tabs a:not([aria-current="page"]):hover::after{ transform:scaleX(1); }
+}
+/* skills: the tools, scrolling past */
+.tool-strip{ margin:0 0 22px; overflow:hidden; -webkit-mask-image:linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image:linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+.tool-strip-track{ display:flex; width:max-content; animation:toolStrip 48s linear infinite; }
+.tool-strip:hover .tool-strip-track{ animation-play-state:paused; }
+.tool-strip-item{ display:inline-flex; align-items:center; gap:9px; margin-right:10px; padding:8px 14px; border:1px solid var(--rule); border-radius:12px; background:var(--surface); color:var(--ink); font-size:var(--fs-sm); font-weight:600; white-space:nowrap; }
+.tool-strip-item img{ height:22px; width:auto; max-width:26px; object-fit:contain; }
+@keyframes toolStrip{ to{ transform:translateX(-50%); } }
+/* ---- icons on buttons, chips, tabs and headings ---- */
+.ic{ flex:none; }
+.btn .ic{ width:18px; height:18px; }
+.btn .ic-art{ display:inline-flex; width:27px; height:18px; }
+.ic-art svg{ display:block; width:100%; height:100%; overflow:visible; }
+.ic-logo{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:18px; }
+.ic-logo img{ max-width:22px; max-height:18px; object-fit:contain; }
+.chip > .ic, .viewtog .ic, .subnav .ic, .mode-tab .ic{ width:16px; height:16px; margin-right:6px; vertical-align:-3px; }
+.subnav button, .viewtog button, .mode-tab{ display:inline-flex; align-items:center; }
+.field-head{ align-items:center; flex-wrap:wrap; row-gap:8px; }
+/* long words (German compounds) wrap inside the methods list instead of widening the page */
+.skills-grid > *{ min-width:0; }
+.m-lab b, .m-lab small, .tools td p, .tools th{ overflow-wrap:anywhere; hyphens:auto; }
+html[lang="de"] main p, html[lang="de"] main li, html[lang="de"] main td, html[lang="de"] main h1, html[lang="de"] main h2, html[lang="de"] main h3, html[lang="de"] main dd, html[lang="de"] main dt{ overflow-wrap:anywhere; hyphens:auto; }
+@media (max-width:560px){ .m-btn{ grid-template-columns:minmax(0,1fr) 56px 76px; gap:10px; } .methods .m-head{ grid-template-columns:minmax(0,1fr) 142px; } }
+.entry .more{ display:flex; flex-wrap:wrap; gap:8px; }
+.btn.backlink:hover{ text-decoration:none; }
+.fig-src .btn{ margin-top:4px; }
+.lead-tog .ic{ transition:transform .25s var(--ease); }
+.entry.open .lead-tog .ic{ transform:rotate(180deg); }
+.city-swap{ color:var(--ink); font-weight:650; }
+.city-swap > span{ text-align:left; justify-self:start; }
+.status{ border-radius:18px; white-space:nowrap; }
+/* home: the eight models as a strip */
+.model-strip{ margin-top:16px; overflow:hidden; padding:6px 0 10px; -webkit-mask-image:linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image:linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+.model-strip-track{ display:flex; width:max-content; animation:toolStrip 80s linear infinite; }
+.model-strip:hover .model-strip-track, .model-strip:focus-within .model-strip-track{ animation-play-state:paused; }
+.model-strip-set{ display:flex; }
+.tool-card.ms-card{ width:310px; margin-right:16px; grid-template-columns:1fr; align-content:start; gap:12px; }
+.tool-card.ms-card svg{ width:96px; height:64px; }
+.tool-card.ms-card p{ display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+@media (hover:none){
+  .model-strip{ overflow-x:auto; scroll-snap-type:x mandatory; -webkit-mask-image:none; mask-image:none; scrollbar-width:none; }
+  .model-strip::-webkit-scrollbar{ display:none; }
+  .model-strip-track{ animation:none; }
+  .model-strip-set[aria-hidden="true"]{ display:none; }
+  .tool-card.ms-card{ width:min(290px, 78vw); scroll-snap-align:start; }
+}
+/* how I work */
+.habit-ic, .soft-ic{ display:inline-grid; place-items:center; width:46px; height:46px; border-radius:12px; background:var(--surface); border:1px solid var(--rule); color:var(--accent); margin-bottom:12px; }
+.habit-ic .hi, .soft-ic .hi{ width:24px; height:24px; }
+.habits .habit-fig{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; margin:0 0 8px; color:var(--ink); }
+.habit-fig .hf-n{ font-size:1.35rem; font-weight:800; font-stretch:var(--w-exp); color:var(--accent); line-height:1.1; }
+.habit-fig .hf-l{ font-size:var(--fs-xs); font-weight:600; color:var(--ink-2); }
+/* soft skills */
+.soft-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:18px; margin-top:16px; }
+.soft{ border:1px solid var(--rule); border-radius:16px; background:var(--surface); padding:18px 18px 16px; }
+.soft .soft-ic{ background:var(--accent-soft); border-color:transparent; }
+.soft h3{ margin-bottom:6px; }
+.soft p{ color:var(--ink-2); font-size:var(--fs-sm); margin:0; }
+.soft .soft-tag{ display:inline-flex; gap:6px; margin-top:10px; padding:3px 9px; border-radius:999px; background:var(--band); font-size:var(--fs-2xs); font-weight:600; color:var(--ink-2); }
+.soft-tag b{ color:var(--accent); }
+@media (max-width:900px){ .soft-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+@media (max-width:560px){ .soft-grid{ grid-template-columns:1fr; } }
+/* tools: the Claude mark */
+.tool-logos svg.ai-mark{ width:24px; height:24px; fill:var(--accent); }
+.tool-strip-item .tool-logos{ width:auto; }
+.tool-strip-item img, .tool-strip-item svg{ height:22px; width:auto; max-width:26px; }
+/* track record: logos, group icons, milestones */
+.t-head{ display:flex; align-items:center; gap:10px; min-width:0; }
+.t-logo{ flex:none; display:grid; place-items:center; width:32px; height:32px; border-radius:9px; background:var(--surface); border:1px solid var(--rule); color:var(--accent); }
+.t-logo img{ max-width:24px; max-height:24px; object-fit:contain; }
+.t-logo .ic{ width:17px; height:17px; }
+.t-group{ display:flex; align-items:center; gap:8px; }
+.t-group .ic{ width:18px; height:18px; color:var(--accent); }
+.t-lane.t-marks{ min-height:58px; }
+.t-mark{ position:absolute; top:6px; z-index:1; transform:translateX(-50%); display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:var(--surface); border:1.5px solid var(--accent); color:var(--accent); }
+.t-mark.r1{ top:31px; }
+.t-mark .ic{ width:13px; height:13px; }
+.t-mlab{ position:absolute; left:29px; top:50%; transform:translateY(-50%); white-space:nowrap; font-size:var(--fs-2xs); font-weight:650; color:var(--ink-2); }
+@media (max-width:700px){ .t-mlab{ display:none; } }
+@media (prefers-reduced-motion: reduce){
+  .model-strip{ overflow-x:auto; } .model-strip-track{ animation:none !important; } .model-strip-set[aria-hidden="true"]{ display:none; }
+  .lead-tog .ic{ transition:none; }
+  .status::before, .tool-strip-track{ animation:none !important; }
+  .role-swap > span, .chip-pill, .tabs a::after{ transition:none !important; }
+}
 @media (prefers-reduced-motion: reduce){
   .rv{ opacity:1 !important; transform:none !important; transition:none !important; }
   .view.view-enter, .hero-intro .hero-text > *, .hero-intro .portrait, .tick, .chart svg.redraw, .mstatus::before{ animation:none !important; }
@@ -1039,11 +1159,13 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
 <section class="view" id="view-home" aria-labelledby="h-name">
   <div class="wrap hero hero-intro">
     <div class="hero-text">
+      <p class="status">Open to work · <span class="role-swap city-swap" data-swap data-every="3000" data-delay="1200"><span class="on" data-w="0">Greater Surabaya</span><span data-w="1">Greater Jakarta</span><span data-w="2">Greater Malang</span><span data-w="3">Makassar area</span><span data-w="4">Balikpapan area</span></span></p>
       <h1 class="name notranslate" id="h-name" translate="no">Naufal Abdul Farid</h1>
+      <p class="hero-role">Focused on <span class="role-swap" data-swap><span class="on" data-w="0">loss modelling</span><span data-w="1">insurance pricing</span><span data-w="2">risk management</span><span data-w="3">data analytics</span><span data-w="4">data science</span><span data-w="5">AI-assisted analytics</span></span></p>
       <p class="now-line"><b>Now</b>Technical support intern, Operations Division, PT Surveyor Indonesia</p>
       <p class="lead">Actuarial science graduate (S.Aktr.) from ITS. I build loss models, measure tail risk, and keep the data underneath them clean.</p>
       <p>My thesis used 66 months of BPJS Ketenagakerjaan claims to estimate how far total claims can run past the average. I have also priced micro-insurance for fishermen's boats, interned at OJK East Java, and led the database team behind a national student competition with 10,000+ participants.</p>
-      <p class="seeking">Open to entry-level roles in risk management, actuarial work and data analytics.</p>
+      <p class="seeking">Open to entry-level roles in risk management and actuarial work, as well as accounting, data analytics and data science.</p>
       <div class="actions">
         <a data-goatcounter-click="contact-email" class="btn btn-solid" href="mailto:naufalabdul11@gmail.com" title="naufalabdul11@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>Email</a>
         <a class="btn btn-soft" href="#resume"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>Resume</a>
@@ -1060,43 +1182,62 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
     <div class="wrap">
       <h2 id="h-results">Selected results</h2>
       <ul class="figs">
-        <li><p class="fig" translate="no">5.37 × 10<sup>−17</sup></p><p class="fig-what">Largest gap between the Panjer and FFT aggregate loss distributions on real JKK and JKM claims</p><p class="fig-src"><a href="#projects/thesis">Thesis</a></p></li>
-        <li><p class="fig" translate="no">Rp13,735.21</p><p class="fig-what">Monthly gross premium per fisherman, priced from a survey of 93 of the 569 fishermen in Bulak</p><p class="fig-src"><a href="#projects/pkm">PKM 2025</a></p></li>
-        <li><p class="fig" translate="no">10,000+</p><p class="fig-what">Students and advisors tracked in the PKM database and portal that my division built and ran</p><p class="fig-src"><a href="#experience">KSN ITS</a></p></li>
-        <li><p class="fig" translate="no">0.86</p><p class="fig-what">ROC-AUC of the best of seven classifiers in my fraud detection lab, on 1,000 auto-insurance claims with real fraud labels</p><p class="fig-src"><a href="#models/fraud">Fraud detection lab</a></p></li>
-        <li><p class="fig" translate="no">Rp6,190</p><p class="fig-what">Monthly premium for ZenCare, an income cover for gig couriers, priced from expected claims, loadings and expenses</p><p class="fig-src"><a href="#projects/zencare">ZenCare</a></p></li>
+        <li><p class="fig" translate="no">5.37 × 10<sup>−17</sup></p><p class="fig-what">Largest gap between the Panjer and FFT aggregate loss distributions on real JKK and JKM claims</p><p class="fig-src"><a class="btn btn-small" data-ic="project:thesis" href="#projects/thesis">Thesis</a></p></li>
+        <li><p class="fig" translate="no">Rp13,735.21</p><p class="fig-what">Monthly gross premium per fisherman, priced from a survey of 93 of the 569 fishermen in Bulak</p><p class="fig-src"><a class="btn btn-small" data-ic="project:pkm" href="#projects/pkm">PKM 2025</a></p></li>
+        <li><p class="fig" translate="no">10,000+</p><p class="fig-what">Students and advisors tracked in the PKM database and portal that my division built and ran</p><p class="fig-src"><a class="btn btn-small" data-ic="org:ksn" href="#experience">KSN ITS</a></p></li>
+        <li><p class="fig" translate="no">0.86</p><p class="fig-what">ROC-AUC of the best of seven classifiers in my fraud detection lab, on 1,000 auto-insurance claims with real fraud labels</p><p class="fig-src"><a class="btn btn-small" data-ic="model:fraud" href="#models/fraud">Fraud detection lab</a></p></li>
+        <li><p class="fig" translate="no">Rp6,190</p><p class="fig-what">Monthly premium for ZenCare, an income cover for gig couriers, priced from expected claims, loadings and expenses</p><p class="fig-src"><a class="btn btn-small" data-ic="project:zencare" href="#projects/zencare">ZenCare</a></p></li>
       </ul>
     </div>
   </div>
   <div class="wrap">
     <section class="panel" aria-labelledby="h-try">
-      <div class="field-head"><h2 id="h-try">Try my models</h2><a href="#models">See all 8 models</a></div>
-      <div class="tool-cards feat">
-        <a class="tool-card" href="#models/risk">
+      <div class="field-head"><h2 id="h-try">Try my models</h2><a class="btn btn-small" data-ic="grid" href="#models">See all 8 models</a></div>
+      <div class="model-strip" id="modelStrip"><div class="model-strip-track"></div></div>
+      <template id="modelStripTpl"><a class="tool-card" href="#models/risk">
           <svg viewBox="0 0 120 80" aria-hidden="true"><path d="M4 74 C20 74 22 18 40 14 C58 10 66 52 84 64 C96 71 106 73 116 74 Z" fill="var(--accent-soft)"/><path d="M4 74 C20 74 22 18 40 14 C58 10 66 52 84 64 C96 71 106 73 116 74" fill="none" stroke="var(--accent)" stroke-width="2"/><path d="M84 64 C96 71 106 73 116 74 L116 75 L84 75 Z" fill="var(--red-soft)"/><line x1="84" y1="8" x2="84" y2="75" stroke="var(--red)" stroke-width="2"/></svg>
           <span><h3>Aggregate loss model</h3><p>Fit distributions to claims data, then compute the total loss with Panjer recursion and FFT, its VaR and TVaR, and the premium.</p><span class="go">Open the model</span></span>
+        </a>
+        <a class="tool-card" href="#models/premium">
+          <svg viewBox="0 0 120 80" aria-hidden="true"><path d="M14 52 L106 52 L94 66 L26 66 Z" fill="var(--accent)"/><line x1="58" y1="14" x2="58" y2="52" stroke="var(--ink-2)" stroke-width="2"/><path d="M60 16 L86 46 L60 46 Z" fill="var(--sky)"/><path d="M4 72 Q16 66 28 72 T52 72 T76 72 T100 72 T124 72" fill="none" stroke="var(--accent)" stroke-width="2"/></svg>
+          <span><h3>Boat insurance calculator</h3><p>Price sharia micro-insurance for fishermen's boats, then test group size, fraud and how the fund grows.</p><span class="go">Open the calculator</span></span>
+        </a>
+        <a class="tool-card" href="#models/zencare">
+          <svg viewBox="0 0 120 80" aria-hidden="true"><path d="M60 6 L88 16 L88 38 C88 56 74 68 60 74 C46 68 32 56 32 38 L32 16 Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><rect x="45" y="40" width="8" height="18" fill="var(--accent)"/><rect x="56" y="31" width="8" height="27" fill="var(--accent)"/><rect x="67" y="22" width="8" height="36" fill="var(--sky)"/></svg>
+          <span><h3>ZenCare pricing</h3><p>Price income protection for gig couriers, then follow reserves, five years of cash flow and RBC capital.</p><span class="go">Open the model</span></span>
         </a>
         <a class="tool-card" href="#models/quake">
           <svg viewBox="0 0 120 80" aria-hidden="true"><rect x="4" y="68" width="112" height="8" rx="3" fill="var(--accent-soft)"/><path d="M6 44 H28 L34 32 L42 58 L50 12 L58 64 L66 28 L72 50 L78 40 L84 44 H114" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="50" cy="12" r="4" fill="var(--sky)"/><path d="M20 76 l6 -8 l6 8 M88 76 l6 -8 l6 8" fill="none" stroke="var(--red)" stroke-width="2" stroke-linejoin="round"/></svg>
           <span><h3>Earthquake catastrophe model</h3><p>Simulate earthquakes on Indonesia’s 16 megathrust segments, turn the shaking into home losses for any of 514 cities and regencies, and read off AAL, VaR and TVaR.</p><span class="go">Open the model</span></span>
         </a>
+        <a class="tool-card" href="#models/equity">
+          <svg viewBox="0 0 120 80" aria-hidden="true"><path d="M62 40 L116 12 L116 70 Z" fill="var(--accent-soft)"/><path d="M62 40 L116 27 L116 55 Z" fill="var(--sky)" opacity=".55"/><path d="M4 48 L16 42 L26 50 L38 34 L50 44 L62 40 L116 41" fill="none" stroke="var(--accent)" stroke-width="2"/><line x1="4" y1="70" x2="116" y2="70" stroke="var(--red)" stroke-width="2" stroke-dasharray="5 4"/></svg>
+          <span><h3>Equity risk lab</h3><p>Load stock prices for VaR and TVaR, a Kupiec backtest, optimal portfolios, CAPM betas and a pension projection.</p><span class="go">Open the lab</span></span>
+        </a>
+        <a class="tool-card" href="#models/forecast">
+          <svg viewBox="0 0 120 80" aria-hidden="true"><path d="M66 46 L114 18 L114 70 Z" fill="var(--accent-soft)"/><line x1="66" y1="8" x2="66" y2="76" stroke="var(--ink-2)" stroke-width="1.5" stroke-dasharray="3 3"/><path d="M6 56 L16 40 L26 56 L36 38 L46 54 L56 34 L66 46" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M66 46 L76 30 L86 46 L96 28 L106 44 L114 32" fill="none" stroke="var(--sky)" stroke-width="2.2" stroke-dasharray="4 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span><h3>Forecasting lab</h3><p>Load any time series, from exchange rates to claims, and see whether ARIMA or Holt-Winters beats a naive forecast on data held back.</p><span class="go">Open the lab</span></span>
+        </a>
         <a class="tool-card" href="#models/fraud">
           <svg viewBox="0 0 120 80" aria-hidden="true"><circle cx="50" cy="36" r="24" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.4"/><path d="M68 54 L92 74" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"/><path d="M39 37 L47 45 L62 28" fill="none" stroke="var(--sky)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="96" cy="16" r="5" fill="var(--red)"/></svg>
           <span><h3>Fraud detection lab</h3><p>Train seven classifiers on insurance claims and judge them by ROC-AUC and money saved, not by accuracy that a flag-nothing rule already wins.</p><span class="go">Open the lab</span></span>
         </a>
-      </div>
+        <a class="tool-card" href="#models/desc">
+          <svg viewBox="0 0 120 80" aria-hidden="true"><rect x="10" y="42" width="14" height="30" rx="2" fill="var(--sky)"/><rect x="30" y="22" width="14" height="50" rx="2" fill="var(--accent)"/><rect x="50" y="32" width="14" height="40" rx="2" fill="var(--sky)"/><line x1="4" y1="72" x2="70" y2="72" stroke="var(--ink-2)" stroke-width="1.5"/><path d="M92 12v58M85 12h14M85 70h14" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"/><rect x="83" y="28" width="18" height="26" rx="2" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.2"/><path d="M83 40h18" stroke="var(--red)" stroke-width="2.4"/></svg>
+          <span><h3>Descriptive statistics lab</h3><p>Paste or upload up to 10 variables and get every summary statistic, normality tests, correlations and 14 kinds of chart, one by one or side by side.</p><span class="go">Open the lab</span></span>
+        </a></template>
     </section>
   </div>
   <div class="band track-band">
     <div class="wrap">
       <h2 id="h-track">Track record</h2>
       <div class="track" id="track"></div>
-      <p class="t-caption">The dotted line marks today. In the leadership rows, darker segments mark more senior roles.</p>
+      <p class="t-caption">The dotted line marks today. In the leadership rows, darker segments mark more senior roles. The last row marks awards and certifications.</p>
     </div>
   </div>
   <div class="wrap">
     <section class="panel" aria-labelledby="h-field">
-      <div class="field-head"><h2 id="h-field">From the field</h2><a href="#experience">All activities</a></div>
+      <div class="field-head"><h2 id="h-field">From the field</h2><a class="btn btn-small" data-ic="image" href="#experience">All activities</a></div>
       <div class="field-grid" id="fieldGrid"></div>
     </section>
   </div>
@@ -1115,12 +1256,14 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
         <tr><th scope="row">Degree</th><td>S.Aktr., Actuarial Science, Institut Teknologi Sepuluh Nopember, <span class="nw">2022–2026</span></td></tr>
         <tr><th scope="row">GPA</th><td class="num">3.29 / 4.00</td></tr>
         <tr><th scope="row">Actuarial exams</th><td>A40 Accounting, Persatuan Aktuaris Indonesia (2026), credited through university course equivalency and counted toward ASAI</td></tr>
+        <tr><th scope="row">Certification</th><td>Risk management, KKNI level 4, capital markets (LSP P1 ITS, November 2026): competent; BNSP certificate in process</td></tr>
         <tr><th scope="row">English</th><td>EnglishScore 380, CEFR B1, British Council (2026)</td></tr>
         <tr><th scope="row">Languages</th><td>Indonesian (native), English (B1)</td></tr>
         <tr><th scope="row">Looking for</th><td>Entry-level roles in risk management, actuarial work and data analytics, in banking or insurance</td></tr>
+        <tr><th scope="row">Open to</th><td>Greater Surabaya, Greater Jakarta, Greater Malang, Makassar and Balikpapan</td></tr>
         <tr><th scope="row">Based in</th><td>Surabaya, East Java</td></tr>
       </tbody></table>
-      <div class="actions"><a class="btn btn-solid" href="#resume">See my resume</a><a class="btn" href="#projects">See my projects</a></div>
+      <div class="actions"><a class="btn btn-solid" data-ic="doc" href="#resume">See my resume</a><a class="btn" data-ic="folder" href="#projects">See my projects</a></div>
     </div>
   </div>
   <section class="panel" aria-labelledby="h-edu">
@@ -1135,9 +1278,9 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
   <section class="panel tint" aria-labelledby="h-habits">
     <h2 id="h-habits">How I work</h2>
     <div class="habits">
-      <div><h3>I plan for missing data</h3><p>No agency kept boat-loss records for the Bulak fishermen, so our survey plan was ready before the data requests came back empty. When the Surabaya office's claims for my thesis were incomplete, I went to the provincial office for the full 66 months.</p></div>
-      <div><h3>I check a number two ways</h3><p>Panjer recursion and FFT should give the same aggregate distribution, so I run both and measure the gap. The fishermen's premium went to an insurer's head actuary and an ITS academic before we used it.</p></div>
-      <div><h3>I keep shared data tidy and private</h3><p>The PKM database my division ran held records on 10,000+ students and their advisors. At OJK I handled credit-information requests and complaints that are confidential by design.</p></div>
+      <div class="habit"><span class="habit-ic" aria-hidden="true"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg></span><p class="habit-fig"><span class="hf-n" translate="no">66</span><span class="hf-l">months of claims, gathered in full</span></p><h3>I plan for missing data</h3><p>No agency kept boat-loss records for the Bulak fishermen, so our survey plan was ready before the data requests came back empty. When the Surabaya office's claims for my thesis were incomplete, I went to the provincial office for the full 66 months.</p></div>
+      <div class="habit"><span class="habit-ic" aria-hidden="true"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m2 13 4 4 8-9M10 16l1 1 10-11"/></svg></span><p class="habit-fig"><span class="hf-n" translate="no">5.37 × 10<sup>−17</sup></span><span class="hf-l">largest gap between Panjer and FFT</span></p><h3>I check a number two ways</h3><p>Panjer recursion and FFT should give the same aggregate distribution, so I run both and measure the gap. The fishermen's premium went to an insurer's head actuary and an ITS academic before we used it.</p></div>
+      <div class="habit"><span class="habit-ic" aria-hidden="true"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg></span><p class="habit-fig"><span class="hf-n" translate="no">10,000+</span><span class="hf-l">student records kept private</span></p><h3>I keep shared data tidy and private</h3><p>The PKM database my division ran held records on 10,000+ students and their advisors. At OJK I handled credit-information requests and complaints that are confidential by design.</p></div>
     </div>
   </section>
 </section>
@@ -1145,12 +1288,12 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
 <!-- PROJECTS -->
 <section class="view wrap" id="view-projects" aria-labelledby="h-projects" hidden>
   <div id="pBrowse">
-    <div class="view-head"><h1 class="vtitle" id="h-projects">Projects</h1><p>Sixteen projects from my thesis, two national research grants, a national competition and coursework. Open a cover to see the question, the approach, the result and my part.</p></div>
+    <div class="view-head"><h1 class="vtitle" id="h-projects">Projects</h1><p>Seventeen projects from my thesis, two national research grants, a national competition, coursework and an app for a family business. Open a cover to see the question, the approach, the result and my part.</p></div>
     <div class="filters">
       <div class="chips" id="domainChips" role="group" aria-label="Filter by field"></div>
       <label class="check"><input type="checkbox" id="ledOnly"> Only projects I led</label>
       <div id="methodFilter"></div>
-      <div class="viewtog" role="group" aria-label="Layout"><button type="button" data-layout="grid" aria-pressed="true">Covers</button><button type="button" data-layout="list" aria-pressed="false">List</button></div>
+      <div class="viewtog" role="group" aria-label="Layout"><button type="button" data-layout="grid" data-ic="grid" aria-pressed="true">Covers</button><button type="button" data-layout="list" data-ic="list" aria-pressed="false">List</button></div>
       <p class="count" id="projCount" aria-live="polite"></p>
     </div>
     <div id="pGrid" class="pgrid"></div>
@@ -1795,12 +1938,12 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
 <!-- EXPERIENCE -->
 <section class="view wrap" id="view-experience" aria-labelledby="h-exp" hidden>
   <div class="view-head"><h1 class="vtitle" id="h-exp">Experience</h1><p>Internships, research and community service, three years of running student programs and their data, and every committee I served on. Select a photo or document to enlarge it.</p></div>
-  <nav class="subnav" id="expNav" aria-label="On this page"><button type="button" data-to="x-intern">Internships</button><button type="button" data-to="x-research">Research and community service</button><button type="button" data-to="x-comp">Competitions</button><button type="button" data-to="x-lead">Leadership</button><button type="button" data-to="h-comm">Committees</button></nav>
+  <nav class="subnav" id="expNav" aria-label="On this page"><button type="button" data-to="x-intern" data-ic="briefcase">Internships</button><button type="button" data-to="x-research" data-ic="flask">Research and community service</button><button type="button" data-to="x-comp" data-ic="trophy">Competitions</button><button type="button" data-to="x-lead" data-ic="flag">Leadership</button><button type="button" data-to="h-comm" data-ic="users">Committees</button></nav>
   <h2 class="sub-h" id="x-intern">Internships</h2>
   <div class="entries">
     <div class="entry"><div class="entry-when">Sep 2026 – Mar 2027</div><div>
       <div class="entry-head"><img class="org" src="img/lg_ptsi.webp" alt="" height="44"><div><h3>PT Surveyor Indonesia <span class="badge">Current</span></h3></div></div>
-      <div class="role-block"><div class="role-line"><b>Technical support intern, Operations Division</b></div><ul class="pts"><li>Register project risks in SIMARIS, the company&#39;s risk management system, analysing potential risks and mitigation measures and assigning risk levels.</li><li>Review the financial reports of three regional projects, Jabatim, Flotimsumba and Balnusawa, checking that their administrative documents are complete and consistent.</li><li>Support budget monitoring by managing the budget plans (RAB) and proforma invoices of all 2026 projects, with Excel formulas that speed up the recaps.</li><li>In progress: a project risk-rating model built on eight years of historical data, to help set likely risks, mitigations and risk levels, to present in March 2027.</li></ul></div></div></div>
+      <div class="role-block"><div class="role-line"><b>Technical support intern, Operations Division</b></div><ul class="pts"><li>Register project risks in SIMARIS, the company&#39;s risk management system, analysing potential risks and mitigation measures and assigning risk levels.</li><li>Review the financial reports of three regional projects, Jabatim, Flotimsumba and Balnusawa, checking that their administrative documents are complete and consistent.</li><li>Support budget monitoring by managing the budget plans (RAB) and proforma invoices of all 2026 projects, with Excel formulas that speed up the recaps.</li><li>Developing, with AI assistance, a prototype risk-register agent for SIMARIS. From eight years of past project registers, it drafts a new project&#39;s risks, causes, mitigations and quarterly targets within the risk appetite, and adds KRI monitoring and a management dashboard. To present in March 2027.</li></ul></div></div></div>
     <div class="entry"><div class="entry-when">Feb – Mar 2025</div><div>
       <div class="entry-head"><img class="org" src="img/lg_ojk.webp" alt="" height="44"><div><h3>Otoritas Jasa Keuangan (OJK) East Java</h3></div></div>
       <div class="role-block"><div class="role-line"><b>Intern, Financial Services Business Conduct, Consumer Education and Protection</b></div><ul class="pts"><li>Handled SLIK credit-information requests and public complaints, and helped settle disputes with financial institutions.</li><li>Helped 12 small-business owners in Surabaya, whose identities were misused for online loans, file reports through OJK Contact 157 and the Indonesia Anti-Scam Centre.</li><li>Made four financial-literacy posts for OJK East Java&#39;s official media.</li><li>Ran a regression of public complaints against consumer education by financial service providers (PUJK) as my internship research.</li></ul></div>
@@ -1808,20 +1951,23 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
   </div>
   <h2 class="sub-h" id="x-research">Research and community service</h2>
   <div class="entries">
+    <div class="entry"><div class="entry-when">Feb – Oct 2026</div><div>
+      <div class="entry-head"><img class="org" src="img/lg_its_mark.webp" alt="" height="44"><div><h3>PKM-RSH mentoring, Directorate of Student Affairs ITS</h3><p class="role">Volunteer mentor</p></div></div>
+      <ul><li>At the directorate&#39;s request, mentored 10 PKM-RSH teams alongside their faculty advisors on methods, analysis tools such as NVivo, outputs and presentations. Six of the ten won Belmawa funding.</li></ul></div></div>
     <div class="entry"><div class="entry-when">Jul – Oct 2025</div><div>
       <div class="entry-head"><img class="org" src="img/lg_pkm25.webp" alt="" height="44"><div><h3>PKM-RSH 2025, national research grant</h3><p class="role">Team lead</p></div></div>
       <ul><li>Designed a community-based sharia micro-insurance scheme for fishermen's boats in Bulak, Surabaya, funded by Belmawa, Kemdiktisaintek.</li></ul>
       <div class="strip" data-gal="pkm25" aria-label="PKM 2025 photos and documents"></div>
-      <p class="more"><a href="#projects/pkm">See the project</a> &nbsp; <a href="#models/premium">Try the premium calculator</a></p></div></div>
+      <p class="more"><a class="btn btn-small" data-ic="project:pkm" href="#projects/pkm">See the project</a><a class="btn btn-small" data-ic="model:premium" href="#models/premium">Try the premium calculator</a></p></div></div>
+    <div class="entry"><div class="entry-when">Apr – Aug 2025</div><div>
+      <div class="entry-head"><img class="org" src="img/lg_its_mark.webp" alt="" height="44"><div><h3>Community service grant (ABMAS), ITS</h3><p class="role">Team member</p></div></div>
+      <ul><li>Revitalising the Madura batik centre to support economic independence and local identity, an ITS-funded community service program (Batch 1, 2025).</li></ul>
+      <div class="strip" data-gal="abmas" aria-label="Community service photos and documents"></div></div></div>
     <div class="entry"><div class="entry-when">Apr – Oct 2024</div><div>
       <div class="entry-head"><img class="org" src="img/lg_pkm24.webp" alt="" height="44"><div><h3>PKM-RSH 2024, national research grant</h3><p class="role">Team lead and first author</p></div></div>
       <ul><li>Studied how the bag and suitcase makers of Tanggulangin, Sidoarjo, stay resilient after a decade of shocks, funded by Belmawa, Kemdiktisaintek. The study is registered as a copyright with DJKI.</li></ul>
       <div class="strip" data-gal="pkm24" aria-label="PKM 2024 photos and documents"></div>
-      <p class="more"><a href="#projects/pkm24">See the project</a></p></div></div>
-    <div class="entry"><div class="entry-when">2025</div><div>
-      <div class="entry-head"><img class="org" src="img/lg_its_mark.webp" alt="" height="44"><div><h3>Community service grant (ABMAS), ITS</h3><p class="role">Team member</p></div></div>
-      <ul><li>Revitalising the Madura batik centre to support economic independence and local identity, an ITS-funded community service program (Batch 1, 2025).</li></ul>
-      <div class="strip" data-gal="abmas" aria-label="Community service photos and documents"></div></div></div>
+      <p class="more"><a class="btn btn-small" data-ic="project:pkm24" href="#projects/pkm24">See the project</a></p></div></div>
   </div>
   <h2 class="sub-h" id="x-comp">Competitions</h2>
   <div class="entries">
@@ -1829,11 +1975,11 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
       <div class="entry-head"><img class="org" src="img/lg_mcf.webp" alt="" height="44"><div><h3>Actuarial Case Competition, Mathematical Challenge Festival (MCF) ITB</h3><p class="role">Finalist, team NND Forecasters</p></div></div>
       <ul><li>Designed pandemic cover for national health insurance (the JKN case) with a multiple-state model and equivalence-principle premiums.</li></ul>
       <div class="strip" data-gal="mcf" aria-label="MCF ITB photos and paper"></div>
-      <p class="more"><a href="#projects/mcf">See the project</a> &nbsp; <a href="#skills">See the certificate</a></p></div></div>
+      <p class="more"><a class="btn btn-small" data-ic="project:mcf" href="#projects/mcf">See the project</a><a class="btn btn-small" data-ic="award" href="#skills">See the certificate</a></p></div></div>
     <div class="entry"><div class="entry-when">Dec 2021</div><div>
       <div class="entry-head"><img class="org" src="img/lg_naspo.webp" alt="" height="44"><div><h3>National Applied Science Project Olympiad (NASPO), IYSA</h3><p class="role">Gold medal, as a student at SMA Negeri 3 Sidoarjo</p></div></div>
       <ul><li>Research on using Lusi Island sediment and Lapindo mud as an eco-friendly source of electricity.</li><li>The research also led to two copyright registrations in 2022, for voltaic-cell teaching aids made with Lusi Island sediment and with Lapindo mud, registered together with my teachers.</li></ul>
-      <p class="more"><a href="#skills">See the certificate</a></p></div></div>
+      <p class="more"><a class="btn btn-small" data-ic="award" href="#skills">See the certificate</a></p></div></div>
   </div>
   <h2 class="sub-h" id="x-lead">Leadership</h2>
   <div class="entries" id="leadEntries"></div>
@@ -1841,9 +1987,9 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
   <p class="lede muted" style="max-width:70ch;margin-top:8px">All 23 committees I served on, from secretariat staff to chair. Coordinator and chair roles are highlighted.</p>
   <div class="comm-summary"><div class="comm-bar" id="commBar" aria-hidden="true"></div><div class="legend" id="commLegend" style="margin-top:8px"></div></div>
   <div class="chips" id="commChips" role="group" aria-label="Filter committees" style="margin-top:14px">
-    <button type="button" class="chip" data-cf="all" aria-pressed="true">All 23</button>
-    <button type="button" class="chip" data-cf="lead" aria-pressed="false">Leadership roles</button>
-    <button type="button" class="chip" data-cf="staff" aria-pressed="false">Staff roles</button></div>
+    <button type="button" class="chip" data-cf="all" data-ic="list" aria-pressed="true">All 23</button>
+    <button type="button" class="chip" data-cf="lead" data-ic="flag" aria-pressed="false">Leadership roles</button>
+    <button type="button" class="chip" data-cf="staff" data-ic="users" aria-pressed="false">Staff roles</button></div>
   <table class="comm-table"><thead><tr><th scope="col">When</th><th scope="col">Event</th><th scope="col">Role</th></tr></thead><tbody id="commBody"></tbody></table>
   <p class="more-row" id="commMore" hidden><button type="button" class="btn btn-small" id="commToggle" aria-expanded="false" aria-controls="commBody"><span id="commToggleT">Show all</span> <span class="n" id="commToggleN"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></p>
 </section>
@@ -1851,7 +1997,8 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
 <!-- SKILLS -->
 <section class="view wrap" id="view-skills" aria-labelledby="h-skills" hidden>
   <div class="view-head"><h1 class="vtitle" id="h-skills">Skills and certifications</h1><p>Each method lists the projects where I used it; select one to filter the Projects page. Certificates, awards, training, appointment letters and my copyright registration are below.</p></div>
-  <nav class="subnav" id="skNav" aria-label="On this page"><button type="button" data-to="h-methods">Methods</button><button type="button" data-to="h-tools">Tools</button><button type="button" data-to="h-creds">Certifications</button></nav>
+  <div class="tool-strip notranslate" translate="no" aria-hidden="true"><div class="tool-strip-track" id="toolStrip"></div></div>
+  <nav class="subnav" id="skNav" aria-label="On this page"><button type="button" data-to="h-methods" data-ic="sigma">Methods</button><button type="button" data-to="h-tools" data-ic="wrench">Tools</button><button type="button" data-to="h-soft" data-ic="person">Soft skills</button><button type="button" data-to="h-creds" data-ic="award">Certifications</button></nav>
   <div class="skills-grid">
     <section aria-labelledby="h-methods"><h3 id="h-methods">Methods</h3><ul class="methods" id="methods"></ul></section>
     <section aria-labelledby="h-tools"><h3 id="h-tools">Tools</h3>
@@ -1860,6 +2007,7 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
             <tr><th scope="row"><span class="tool"><span class="tool-logos"><img src="img/sw_colab.webp" alt=""></span>Google Colab</span></th><td><p class="tool-use">Running and sharing the thesis and project notebooks</p><p class="tool-feat">Jupyter notebooks on Google Drive, and rpy2 to run R from Python</p></td></tr>
             <tr><th scope="row"><span class="tool"><span class="tool-logos"><img src="img/sw_r.webp" alt=""></span>R</span></th><td><p class="tool-use">MCMC Value at Risk and the OJK complaint regression</p><p class="tool-feat">fitdistrplus · MASS · logspline · dplyr · ggplot2 · readxl · openxlsx</p></td></tr>
             <tr><th scope="row"><span class="tool"><span class="tool-logos"><img src="img/sw_rstudio.webp" alt=""></span>RStudio, R Shiny</span></th><td><p class="tool-use">The Explore Jatim tourism dashboard</p><p class="tool-feat">Shiny apps with reactive inputs, and R Markdown reports published on RPubs</p></td></tr>
+            <tr><th scope="row"><span class="tool"><span class="tool-logos"><svg class="ai-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5c.7 4.9 3.2 7.4 8.1 8.1-4.9.7-7.4 3.2-8.1 8.1-.7-4.9-3.2-7.4-8.1-8.1 4.9-.7 7.4-3.2 8.1-8.1z"/><path d="M19.2 15.8c.3 1.6 1 2.3 2.6 2.6-1.6.3-2.3 1-2.6 2.6-.3-1.6-1-2.3-2.6-2.6 1.6-.3 2.3-1 2.6-2.6z"/></svg></span>Claude, Claude Code</span></th><td><p class="tool-use">This website and its eight live models, my portfolio decks, dashboards, and an accounting system and a risk management system, all built with AI assistance</p><p class="tool-feat">Claude 101 and Claude Code 101, Claude Academy (2026) · clear briefs · checking and testing what the AI produces</p></td></tr>
             <tr><th scope="row"><span class="tool"><span class="tool-logos"><img src="img/sw_word.webp" alt=""></span>Microsoft Word</span></th><td><p class="tool-use">PKM articles and policy briefs, internship reports and the thesis manuscript</p><p class="tool-feat">Styles and automatic tables of contents, captions and cross-references, citations</p></td></tr>
             <tr><th scope="row"><span class="tool"><span class="tool-logos"><img src="img/sw_excel.webp" alt=""></span>Microsoft Excel</span></th><td><p class="tool-use">Recap tools with formulas and macros, including recaps at PT Surveyor Indonesia</p><p class="tool-feat">PivotTables · VLOOKUP · XLOOKUP · IF and IFS · SUMIFS and COUNTIFS · basic macros</p></td></tr>
             <tr><th scope="row"><span class="tool"><span class="tool-logos"><img src="img/sw_powerpoint.webp" alt=""></span>Microsoft PowerPoint</span></th><td><p class="tool-use">Thesis defense, competition and project presentations</p><p class="tool-feat">Slide masters, charts and diagrams</p></td></tr>
@@ -1870,6 +2018,18 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
             <tr><th scope="row"><span class="tool"><span class="tool-logos"><img src="img/sw_cpp.webp" alt=""></span>C++</span></th><td><p class="tool-use">Programming coursework</p><p class="tool-feat">Control flow, functions and arrays</p></td></tr>
           </tbody></table></section>
   </div>
+  <section class="panel" aria-labelledby="h-soft">
+    <h2 id="h-soft">Soft skills</h2>
+    <p class="lede muted">Each one with the work that shows it.</p>
+    <div class="soft-grid">
+      <div class="soft"><span class="soft-ic" aria-hidden="true"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg></span><h3>Leadership</h3><p>Head of the KSN ITS database division, Director General at BEM ITS, and team lead of two national research grants.</p></div>
+      <div class="soft"><span class="soft-ic" aria-hidden="true"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><h3>Communication</h3><p>Four financial-literacy posts for OJK East Java, two policy briefs, and the thesis defense and competition presentations.</p><p class="soft-tag"><span>GNIK, Social Influence</span> <b translate="no">100</b></p></div>
+      <div class="soft"><span class="soft-ic" aria-hidden="true"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2A5 5 0 0 1 21 19"/></svg></span><h3>Teamwork</h3><p>23 committees, from secretariat staff to chair, and team projects from two to six people.</p><p class="soft-tag"><span>GNIK, Emotional Intelligence</span> <b translate="no">95</b></p></div>
+      <div class="soft"><span class="soft-ic" aria-hidden="true"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg></span><h3>Integrity and confidentiality</h3><p>Confidential credit-information requests and complaints at OJK, and the records of 10,000+ students at KSN ITS.</p><p class="soft-tag"><span>GNIK, Integrity at Work</span> <b translate="no">91</b></p></div>
+      <div class="soft"><span class="soft-ic" aria-hidden="true"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg></span><h3>Adaptability</h3><p>From actuarial models to IT support at PT Surveyor Indonesia, and from coursework to eight live web models.</p><p class="soft-tag"><span>GNIK, Adaptability</span> <b translate="no">100</b></p></div>
+      <div class="soft"><span class="soft-ic" aria-hidden="true"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><h3>Problem solving</h3><p>When the thesis claims were incomplete, I got the full 66 months from the provincial office; when no boat-loss records existed, we surveyed 93 fishermen.</p></div>
+    </div>
+  </section>
   <section class="panel" aria-labelledby="h-creds">
     <h2 id="h-creds">Certifications, awards and intellectual property</h2>
     <div class="chips" id="certChips" role="group" aria-label="Filter certificates" style="margin-top:14px"></div>
@@ -1881,7 +2041,7 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
 <section class="view wrap" id="view-resume" aria-labelledby="h-resume" hidden>
   <div class="view-head"><h1 class="vtitle" id="h-resume">Resume</h1><p>My two-page resume. Select a page to enlarge it, or view or download the PDF.</p>
     <div class="cv-actions">
-      <a data-goatcounter-click="cv-view" class="btn btn-solid" href="files/Naufal-Abdul-Farid-Resume.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>View PDF</a>
+      <a data-goatcounter-click="cv-view" class="btn btn-solid" href="https://drive.google.com/file/d/18Jtw_5KzDiPcGKE9kwgBiacmNByESVc3/view?usp=sharing" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>View PDF</a>
       <a data-goatcounter-click="cv-download" class="btn btn-soft" href="files/Naufal-Abdul-Farid-Resume.pdf" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v3h16v-3"/></svg>Download PDF</a></div></div>
   <div class="cv-pages" id="cvPages"></div>
 </section>
@@ -1896,7 +2056,7 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
 </div>
 <section class="closer" aria-labelledby="h-closer">
   <div class="wrap closer-in">
-    <div><h2 id="h-closer">Open to entry-level roles in risk management, actuarial work and data analytics.</h2><p class="notranslate" translate="no">naufalabdul11@gmail.com &nbsp; +62 821-3209-4508</p></div>
+    <div><h2 id="h-closer">Open to entry-level roles in risk management and actuarial work, as well as accounting, data analytics and data science.</h2><p class="notranslate" translate="no">naufalabdul11@gmail.com &nbsp; +62 821-3209-4508</p></div>
     <div class="actions">
       <a data-goatcounter-click="contact-email" class="btn btn-solid" href="mailto:naufalabdul11@gmail.com" title="naufalabdul11@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>Email</a>
       <a data-goatcounter-click="contact-linkedin" class="btn btn-soft" href="https://www.linkedin.com/in/naufalabdul11/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>LinkedIn</a>
@@ -1907,7 +2067,7 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
 </section>
 <footer class="foot"><div class="wrap"><span>Naufal Abdul Farid, S.Aktr., Surabaya. Updated <time id="updated" translate="no"></time></span><span class="muted">Visits are counted anonymously with GoatCounter, without cookies.</span></div></footer>
 
-<script id="imgdata" type="application/json">{"abmas10":"img/abmas10.webp","abmas6":"img/abmas6.webp","abmas7":"img/abmas7.webp","abmas9":"img/abmas9.webp","bemdg1":"img/bemdg1.webp","bemdg5":"img/bemdg5.webp","bemdg7":"img/bemdg7.webp","bems1":"img/bems1.webp","bems5":"img/bems5.webp","bems6":"img/bems6.webp","bim1":"img/bim1.webp","bim3":"img/bim3.webp","bim4":"img/bim4.webp","cab_bem24":"img/cab_bem24.webp","cab_bem25":"img/cab_bem25.webp","cab_bim23":"img/cab_bim23.webp","cab_hima24":"img/cab_hima24.webp","cab_ksn23":"img/cab_ksn23.webp","cab_ksn24":"img/cab_ksn24.webp","cab_ksn25":"img/cab_ksn25.webp","cab_lkki23":"img/cab_lkki23.webp","cab_lkki24":"img/cab_lkki24.webp","cert_a40":"img/cert_a40.webp","cert_abmas":"img/cert_abmas.webp","cert_eng":"img/cert_eng.webp","cert_gnik1":"img/cert_gnik1.webp","cert_gnik2":"img/cert_gnik2.webp","cert_gnik3":"img/cert_gnik3.webp","cert_gnik4":"img/cert_gnik4.webp","cert_gnik5":"img/cert_gnik5.webp","cert_gnik6":"img/cert_gnik6.webp","cert_gnik7":"img/cert_gnik7.webp","cert_gnik8":"img/cert_gnik8.webp","cert_hki":"img/cert_hki.webp","cert_ksn23":"img/cert_ksn23.webp","cert_lkmm":"img/cert_lkmm.webp","cert_lkmw":"img/cert_lkmw.webp","cert_mcf":"img/cert_mcf.webp","cert_naspo":"img/cert_naspo.webp","cert_org_bim":"img/cert_org_bim.webp","cert_org_hima":"img/cert_org_hima.webp","cert_org_lkki":"img/cert_org_lkki.webp","cert_pkm24":"img/cert_pkm24.webp","cert_pkm25":"img/cert_pkm25.webp","cert_pkti":"img/cert_pkti.webp","cert_pmo":"img/cert_pmo.webp","cv_p1":"img/cv_p1.webp","cv_p2":"img/cv_p2.webp","doc_arma":"img/doc_arma.webp","doc_btc":"img/doc_btc.webp","doc_cox":"img/doc_cox.webp","doc_diamond":"img/doc_diamond.webp","doc_fraud":"img/doc_fraud.webp","doc_jatim":"img/doc_jatim.webp","doc_kartal":"img/doc_kartal.webp","doc_mayora":"img/doc_mayora.webp","doc_mcf":"img/doc_mcf.webp","doc_ojk_poster":"img/doc_ojk_poster.webp","doc_ojk_report":"img/doc_ojk_report.webp","doc_pkm24_article":"img/doc_pkm24_article.webp","doc_pkm24_brief":"img/doc_pkm24_brief.webp","doc_pkm25_article":"img/doc_pkm25_article.webp","doc_pkm25_brief":"img/doc_pkm25_brief.webp","doc_power":"img/doc_power.webp","doc_quake":"img/doc_quake.webp","doc_thesis_book":"img/doc_thesis_book.webp","doc_thesis_paper":"img/doc_thesis_paper.webp","doc_var":"img/doc_var.webp","doc_zencare":"img/doc_zencare.webp","hima10":"img/hima10.webp","hima4":"img/hima4.webp","hima6":"img/hima6.webp","hima8":"img/hima8.webp","hima9":"img/hima9.webp","ip_lapindo":"img/ip_lapindo.webp","ip_lusi":"img/ip_lusi.webp","ksnh1":"img/ksnh1.webp","ksnh5":"img/ksnh5.webp","ksnh6":"img/ksnh6.webp","ksnh9":"img/ksnh9.webp","ksns10":"img/ksns10.webp","ksns2":"img/ksns2.webp","ksns4":"img/ksns4.webp","ksns9":"img/ksns9.webp","lg_bem":"img/lg_bem.webp","lg_bimits":"img/lg_bimits.webp","lg_hima":"img/lg_hima.webp","lg_ksn":"img/lg_ksn.webp","lg_lkki":"img/lg_lkki.webp","lkki2":"img/lkki2.webp","lkki3":"img/lkki3.webp","mcf1":"img/mcf1.webp","mcf2":"img/mcf2.webp","mcf3":"img/mcf3.webp","ojk1":"img/ojk1.webp","ojk2":"img/ojk2.webp","ojk3":"img/ojk3.webp","ojk4":"img/ojk4.webp","ojk5":"img/ojk5.webp","pkm241":"img/pkm241.webp","pkm243":"img/pkm243.webp","pkm245":"img/pkm245.webp","pkm246":"img/pkm246.webp","pkm251":"img/pkm251.webp","pkm2511":"img/pkm2511.webp","pkm252":"img/pkm252.webp","pkm253":"img/pkm253.webp","pkm256":"img/pkm256.webp","pkm257":"img/pkm257.webp","sk_bem24":"img/sk_bem24.webp","sk_bemdg25":"img/sk_bemdg25.webp","sk_ksn24":"img/sk_ksn24.webp"}</script>
+<script id="imgdata" type="application/json">{"abmas10":"img/abmas10.webp","abmas6":"img/abmas6.webp","abmas7":"img/abmas7.webp","abmas9":"img/abmas9.webp","bemdg1":"img/bemdg1.webp","bemdg5":"img/bemdg5.webp","bemdg7":"img/bemdg7.webp","bems1":"img/bems1.webp","bems5":"img/bems5.webp","bems6":"img/bems6.webp","bim1":"img/bim1.webp","bim3":"img/bim3.webp","bim4":"img/bim4.webp","cab_bem24":"img/cab_bem24.webp","cab_bem25":"img/cab_bem25.webp","cab_bim23":"img/cab_bim23.webp","cab_hima24":"img/cab_hima24.webp","cab_ksn23":"img/cab_ksn23.webp","cab_ksn24":"img/cab_ksn24.webp","cab_ksn25":"img/cab_ksn25.webp","cab_lkki23":"img/cab_lkki23.webp","cab_lkki24":"img/cab_lkki24.webp","cert_a40":"img/cert_a40.webp","cert_lsp":"img/cert_lsp.webp","cert_claude101":"img/cert_claude101.webp","cert_claudecode101":"img/cert_claudecode101.webp","cert_abmas":"img/cert_abmas.webp","cert_eng":"img/cert_eng.webp","cert_gnik1":"img/cert_gnik1.webp","cert_gnik2":"img/cert_gnik2.webp","cert_gnik3":"img/cert_gnik3.webp","cert_gnik4":"img/cert_gnik4.webp","cert_gnik5":"img/cert_gnik5.webp","cert_gnik6":"img/cert_gnik6.webp","cert_gnik7":"img/cert_gnik7.webp","cert_gnik8":"img/cert_gnik8.webp","cert_hki":"img/cert_hki.webp","cert_ksn23":"img/cert_ksn23.webp","cert_lkmm":"img/cert_lkmm.webp","cert_lkmw":"img/cert_lkmw.webp","cert_mcf":"img/cert_mcf.webp","cert_naspo":"img/cert_naspo.webp","cert_org_bim":"img/cert_org_bim.webp","cert_org_hima":"img/cert_org_hima.webp","cert_org_lkki":"img/cert_org_lkki.webp","cert_pkm24":"img/cert_pkm24.webp","cert_pkm25":"img/cert_pkm25.webp","cert_pkti":"img/cert_pkti.webp","cert_pmo":"img/cert_pmo.webp","doc_iclean_app":"img/doc_iclean_app.webp","doc_iclean_nota":"img/doc_iclean_nota.webp","cv_p1":"img/cv_p1.webp","cv_p2":"img/cv_p2.webp","doc_arma":"img/doc_arma.webp","doc_btc":"img/doc_btc.webp","doc_cox":"img/doc_cox.webp","doc_diamond":"img/doc_diamond.webp","doc_fraud":"img/doc_fraud.webp","doc_jatim":"img/doc_jatim.webp","doc_kartal":"img/doc_kartal.webp","doc_mayora":"img/doc_mayora.webp","doc_mcf":"img/doc_mcf.webp","doc_ojk_poster":"img/doc_ojk_poster.webp","doc_ojk_report":"img/doc_ojk_report.webp","doc_pkm24_article":"img/doc_pkm24_article.webp","doc_pkm24_brief":"img/doc_pkm24_brief.webp","doc_pkm25_article":"img/doc_pkm25_article.webp","doc_pkm25_brief":"img/doc_pkm25_brief.webp","doc_power":"img/doc_power.webp","doc_quake":"img/doc_quake.webp","doc_thesis_book":"img/doc_thesis_book.webp","doc_thesis_paper":"img/doc_thesis_paper.webp","doc_var":"img/doc_var.webp","doc_zencare":"img/doc_zencare.webp","hima10":"img/hima10.webp","hima4":"img/hima4.webp","hima6":"img/hima6.webp","hima8":"img/hima8.webp","hima9":"img/hima9.webp","ip_lapindo":"img/ip_lapindo.webp","ip_lusi":"img/ip_lusi.webp","ksnh1":"img/ksnh1.webp","ksnh5":"img/ksnh5.webp","ksnh6":"img/ksnh6.webp","ksnh9":"img/ksnh9.webp","ksns10":"img/ksns10.webp","ksns2":"img/ksns2.webp","ksns4":"img/ksns4.webp","ksns9":"img/ksns9.webp","lg_bem":"img/lg_bem.webp","lg_bimits":"img/lg_bimits.webp","lg_hima":"img/lg_hima.webp","lg_ksn":"img/lg_ksn.webp","lg_lkki":"img/lg_lkki.webp","lkki2":"img/lkki2.webp","lkki3":"img/lkki3.webp","mcf1":"img/mcf1.webp","mcf2":"img/mcf2.webp","mcf3":"img/mcf3.webp","ojk1":"img/ojk1.webp","ojk2":"img/ojk2.webp","ojk3":"img/ojk3.webp","ojk4":"img/ojk4.webp","ojk5":"img/ojk5.webp","pkm241":"img/pkm241.webp","pkm243":"img/pkm243.webp","pkm245":"img/pkm245.webp","pkm246":"img/pkm246.webp","pkm251":"img/pkm251.webp","pkm2511":"img/pkm2511.webp","pkm252":"img/pkm252.webp","pkm253":"img/pkm253.webp","pkm256":"img/pkm256.webp","pkm257":"img/pkm257.webp","sk_bem24":"img/sk_bem24.webp","sk_bemdg25":"img/sk_bemdg25.webp","sk_ksn24":"img/sk_ksn24.webp"}</script>
 <script>
 /* ===== Aggregate loss engine v2: thesis candidate distributions, Panjer vs FFT ===== */
 var LG = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
@@ -3052,7 +3212,7 @@ function dsSample(key){
 'use strict';
 var IMG = {}; try { IMG = JSON.parse(document.getElementById('imgdata').textContent); } catch (e) {}
 function img(id){ return IMG[id] || ''; }
-var DIMS = {"ojk5":[1080,608],"ojk4":[1080,608],"ojk2":[1080,608],"ojk3":[1080,810],"ojk1":[810,1080],"pkm252":[608,1080],"pkm256":[1080,810],"pkm253":[1080,608],"pkm251":[1080,810],"pkm2511":[1080,608],"pkm257":[1080,810],"pkm245":[1080,608],"pkm246":[1080,608],"pkm241":[810,1080],"pkm243":[1080,810],"abmas9":[1080,614],"abmas7":[1080,1020],"abmas6":[1080,846],"abmas10":[797,1080],"ksnh9":[1080,810],"ksnh1":[1080,608],"ksnh6":[1080,810],"ksnh5":[1080,608],"ksns9":[1080,810],"ksns2":[1080,810],"ksns4":[1080,810],"ksns10":[1080,608],"bemdg5":[1080,608],"bemdg7":[1080,608],"bemdg1":[1080,608],"bems1":[1080,608],"bems5":[1080,810],"bems6":[1080,608],"hima6":[1080,810],"hima8":[1080,810],"hima9":[1080,810],"hima10":[810,1080],"hima4":[810,1080],"lkki2":[1080,608],"lkki3":[1080,810],"bim3":[1080,720],"bim4":[1080,720],"bim1":[1080,608],"mcf2":[1080,810],"mcf3":[1080,608],"mcf1":[810,1080],"doc_ojk_report":[760,1079],"doc_ojk_poster":[820,1160],"doc_pkm24_article":[760,1075],"doc_pkm25_article":[760,1075],"doc_diamond":[760,984],"doc_power":[760,984],"doc_cox":[760,1075],"doc_jatim":[760,1076],"doc_mayora":[760,1075],"doc_zencare":[760,1075],"doc_quake":[760,1074],"doc_var":[760,1075],"doc_pkm24_brief":[760,1075],"doc_pkm25_brief":[760,1075],"cert_lkmm":[960,679],"cert_lkmw":[960,679],"cert_pkti":[960,679],"cert_gnik1":[960,680],"cert_gnik2":[960,680],"cert_gnik3":[960,680],"cert_gnik4":[960,680],"cert_gnik5":[960,680],"cert_gnik6":[960,680],"cert_gnik7":[960,680],"cert_gnik8":[960,680],"cert_abmas":[960,1487],"cert_mcf":[960,548],"cert_naspo":[960,679],"cert_pkm24":[960,679],"cert_pkm25":[960,679],"me_hero":[720,902],"me_about":[640,800],"me_avatar":[320,320],"lg_its":[210,120],"lg_its_w":[210,120],"lg_its_mark":[112,112],"lg_bem":[98,112],"lg_hima":[105,112],"lg_ksn":[103,112],"lg_lkki":[63,112],"cab_ksn24":[81,112],"cab_ksn25":[82,112],"cab_lkki23":[111,112],"cab_lkki24":[27,112],"cab_hima24":[112,112],"cab_bem24":[69,112],"cab_bem25":[134,112],"doc_thesis_book":[760,1075],"doc_thesis_paper":[760,984],"doc_fraud":[760,1075],"doc_mcf":[760,1075],"cv_p1":[1100,1556],"cv_p2":[1100,1556],"cert_a40":[960,1359],"cert_eng":[960,1358],"cert_hki":[960,1358],"cert_pmo":[960,680],"cert_org_bim":[960,680],"cert_org_hima":[960,680],"cert_org_lkki":[960,679],"sk_ksn24":[900,674],"sk_bemdg25":[900,687],"sk_bem24":[900,503],"lg_sma":[99,120]};
+var DIMS = {"ojk5":[1080,608],"ojk4":[1080,608],"ojk2":[1080,608],"ojk3":[1080,810],"ojk1":[810,1080],"pkm252":[608,1080],"pkm256":[1080,810],"pkm253":[1080,608],"pkm251":[1080,810],"pkm2511":[1080,608],"pkm257":[1080,810],"pkm245":[1080,608],"pkm246":[1080,608],"pkm241":[810,1080],"pkm243":[1080,810],"abmas9":[1080,614],"abmas7":[1080,1020],"abmas6":[1080,846],"abmas10":[797,1080],"ksnh9":[1080,810],"ksnh1":[1080,608],"ksnh6":[1080,810],"ksnh5":[1080,608],"ksns9":[1080,810],"ksns2":[1080,810],"ksns4":[1080,810],"ksns10":[1080,608],"bemdg5":[1080,608],"bemdg7":[1080,608],"bemdg1":[1080,608],"bems1":[1080,608],"bems5":[1080,810],"bems6":[1080,608],"hima6":[1080,810],"hima8":[1080,810],"hima9":[1080,810],"hima10":[810,1080],"hima4":[810,1080],"lkki2":[1080,608],"lkki3":[1080,810],"bim3":[1080,720],"bim4":[1080,720],"bim1":[1080,608],"mcf2":[1080,810],"mcf3":[1080,608],"mcf1":[810,1080],"doc_ojk_report":[760,1079],"doc_ojk_poster":[820,1160],"doc_pkm24_article":[760,1075],"doc_pkm25_article":[760,1075],"doc_diamond":[760,984],"doc_power":[760,984],"doc_cox":[760,1075],"doc_jatim":[760,1076],"doc_mayora":[760,1075],"doc_zencare":[760,1075],"doc_quake":[760,1074],"doc_var":[760,1075],"doc_pkm24_brief":[760,1075],"doc_pkm25_brief":[760,1075],"cert_lkmm":[960,679],"cert_lkmw":[960,679],"cert_pkti":[960,679],"cert_gnik1":[960,680],"cert_gnik2":[960,680],"cert_gnik3":[960,680],"cert_gnik4":[960,680],"cert_gnik5":[960,680],"cert_gnik6":[960,680],"cert_gnik7":[960,680],"cert_gnik8":[960,680],"cert_abmas":[960,1487],"cert_mcf":[960,548],"cert_naspo":[960,679],"cert_pkm24":[960,679],"cert_pkm25":[960,679],"me_hero":[720,902],"me_about":[640,800],"me_avatar":[320,320],"lg_its":[210,120],"lg_its_w":[210,120],"lg_its_mark":[112,112],"lg_bem":[98,112],"lg_hima":[105,112],"lg_ksn":[103,112],"lg_lkki":[63,112],"cab_ksn24":[81,112],"cab_ksn25":[82,112],"cab_lkki23":[111,112],"cab_lkki24":[27,112],"cab_hima24":[112,112],"cab_bem24":[69,112],"cab_bem25":[134,112],"doc_thesis_book":[760,1075],"doc_thesis_paper":[760,984],"doc_fraud":[760,1075],"doc_mcf":[760,1075],"doc_iclean_app":[1280,720],"doc_iclean_nota":[685,1338],"cv_p1":[1100,1556],"cv_p2":[1100,1556],"cert_a40":[960,1359],"cert_lsp":[960,1242],"cert_claude101":[960,703],"cert_claudecode101":[960,703],"cert_eng":[960,1358],"cert_hki":[960,1358],"cert_pmo":[960,680],"cert_org_bim":[960,680],"cert_org_hima":[960,680],"cert_org_lkki":[960,679],"sk_ksn24":[900,674],"sk_bemdg25":[900,687],"sk_bem24":[900,503],"lg_sma":[99,120]};
 function $(s, r){ return (r || document).querySelector(s); }
 function $all(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
 function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -3102,6 +3262,12 @@ var PROJECTS = [
   question:'How much could Bitcoin lose in a day, and how stable is that estimate when the simulation is repeated?',
   did:['Turned daily Bitcoin closing prices into daily returns in R.', 'Simulated 365 daily returns from a normal distribution fitted to the history, and repeated the simulation 1,000 times.', 'Estimated daily VaR at 90% and 95%, and compared the parametric and empirical-quantile approaches.'],
   outcome:['An average daily VaR of \u22125.02% at 90% (\u22124.98% from empirical quantiles) and \u22126.55% at 95%.'], part:'Solo analysis, published on RPubs.'},
+ {id:'iclean', end:'2026-11', when:'Nov 2026', context:'Independent project for a family business, iClean Motowash', domain:'ml', role:'solo', cover:'doc_iclean_app',
+  docs:[['doc_iclean_app','App','Cashier screen, from the app’s explainer video (crew names blurred)'],['doc_iclean_nota','Receipt','A receipt printed by the app (plate number blurred)']],
+  title:'iClean Kasir: cashier and bookkeeping app for a motorcycle wash', method:'Google Apps Script web app on Google Sheets', result:'One app for the counter, the wash queue, stock, wages and the daily cash closing', key:'Apps Script web app', tools:'Google Sheets, Google Apps Script',
+  question:'A motorcycle wash run by my family kept its books by hand: the cash in the drawer did not always match the takings, and washing supplies ran out without warning. Could one simple app keep the books for the owner and the cashier?',
+  did:['Built a web app in Google Apps Script on top of Google Sheets, with separate owner and cashier logins, each protected by a PIN.', 'At the counter the cashier types a plate number: the customer’s record and motorcycle size come up, the price follows the size and the package, payment is cash or QRIS, and the receipt goes out as a PDF or a WhatsApp message.', 'Every customer’s washes count towards a free one (7+1), tracked by plate, and a queue shows which motorcycles are waiting, being washed or done.', 'For the owner: stock that falls with the material each service uses, crew wages, expenses, a daily cash closing that shows any variance, and a dashboard of daily targets, peak hours and monthly profit against break-even.'],
+  outcome:['A working app, with an explainer video that walks the owner and the cashier through each screen.'], part:'All of it: the design, the code and the explainer video.'},
  {id:'thesis', end:'2026-06', when:'Jan – Jun 2026', context:'Undergraduate thesis, Institut Teknologi Sepuluh Nopember', domain:'ins', role:'solo', cover:'doc_thesis_book',
   docs:[['doc_thesis_book','Thesis','Thesis book, cover'],['doc_thesis_paper','Paper','Journal paper draft, first page']],
   title:'Aggregate claim loss risk, BPJS Ketenagakerjaan Surabaya', method:'Collective risk model, Panjer recursion and FFT, VaR and TVaR',
@@ -3187,7 +3353,7 @@ var METHODS = [
  {key:'ml', label:'Classification and clustering', ids:['fraud','jatim','power']}, {key:'price', label:'Pricing, reserving and solvency', ids:['pkm','zencare','mcf']},
  {key:'risk', label:'Risk measures: VaR, TVaR, backtesting', ids:['thesis','var','btc']}, {key:'erm', label:'Risk management: ISO 31000, risk registers, stress testing', ids:['zencare','thesis']}, {key:'sim', label:'Monte Carlo and MCMC simulation', ids:['var','quake','mcf','btc']},
  {key:'port', label:'Portfolio construction and valuation', ids:['var','mayora']}, {key:'reg', label:'Regression and survival models', ids:['cox','diamond']},
- {key:'survey', label:'Field research and primary data', ids:['pkm','pkm24']}, {key:'geo', label:'Spatial analysis and dashboards', ids:['quake','jatim']},
+ {key:'survey', label:'Field research and primary data', ids:['pkm','pkm24']}, {key:'geo', label:'Spatial analysis and dashboards', ids:['quake','jatim','iclean']},
  {key:'ts', label:'Time-series forecasting', ids:['kartal','arma','mayora']}, {key:'life', label:'Multiple-state and life-contingency models', ids:['mcf']}
 ];
 METHODS.sort(function(a, b){ return b.ids.length - a.ids.length; });
@@ -3237,7 +3403,11 @@ var COMM = [
 ];
 var GNIK = [['Adaptability',100],['Digital Disruption and Transformation',100],['Digital Literacy',100],['Emotional Intelligence',95],['Emotional Resilience',90],['Integrity at Work',91],['Self Efficacy',100],['Social Influence',100]];
 var CG = [['all','All'],['cert','Certifications'],['award','Awards and grants'],['training','Training'],['org','Appointments'],['ip','Intellectual property']];
+/* one icon per kind of target, used by every button, chip and heading that carries an icon */
+var ICP = {mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',model:'<path d="M3 3v18h18"/><path d="M7 15c2-5 4-7 6-4s3 3 5-3"/>',grid:'<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>',list:'<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="2.6"/>',image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5L5 20"/>',award:'<circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/>',arrowL:'<path d="M19 12H5M11 6l-6 6 6 6"/>',chevL:'<path d="m15 6-6 6 6 6"/>',chevR:'<path d="m9 6 6 6-6 6"/>',chevDown:'<path d="m6 9 6 6 6-6"/>',external:'<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',briefcase:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',flask:'<path d="M9 3h6M10 3v6L4.6 18.2A2 2 0 0 0 6.3 21h11.4a2 2 0 0 0 1.7-2.8L14 9V3"/><path d="M7 15h10"/>',trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M10 17h4"/>',flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',users:'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2A5 5 0 0 1 21 19"/>',person:'<circle cx="10" cy="8" r="4"/><path d="M3 21a7 7 0 0 1 11.5-5.4"/><path d="m15 18 2 2 4-4"/>',sigma:'<path d="M18 5H6l6 7-6 7h12"/>',wrench:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/>',badge:'<path d="M12 3l2.4 1.8 3-.2.9 2.9 2.5 1.7-1 2.8 1 2.8-2.5 1.7-.9 2.9-3-.2L12 21l-2.4-1.8-3 .2-.9-2.9-2.5-1.7 1-2.8-1-2.8 2.5-1.7.9-2.9 3 .2z"/><path d="m9 12 2 2 4-4"/>',cap:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5M22 9v6"/>',fileSign:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/>',copyright:'<circle cx="12" cy="12" r="9"/><path d="M15 9.5a4 4 0 1 0 0 5"/>',upload:'<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>',download:'<path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>',data:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',play:'<path d="M7 4v16l13-8z"/>',repeat:'<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 3v5h5M4 13a8 8 0 0 0 14.3 4.9L20 16M20 21v-5h-5"/>',shuffle:'<path d="M3 6h3c5 0 7 12 12 12h3M3 18h3c2 0 3.4-1.8 4.6-4M13.4 10C14.6 7.8 16 6 18 6h3M18 3l3 3-3 3M18 15l3 3-3 3"/>',check:'<path d="m5 12 5 5 9-10"/>',sliders:'<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',shield:'<path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/>',compass:'<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',bulb:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',clipboard:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',checks:'<path d="m2 13 4 4 8-9M10 16l1 1 10-11"/>',spark:'<path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/>'};
+function icSvg(name, cls){ return ICP[name] ? '<svg class="' + (cls || 'ic') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + ICP[name] + '</svg>' : ''; }
 var CERTS = [
+ {g:'cert', t:'Risk management competency, KKNI level 4, capital markets', m:'LSP P1 ITS, November 2026; BNSP certificate in process', items:[['cert_lsp','LSP P1 ITS letter of competency, 16 November 2026: competent in the KKNI level 4 scheme for capital markets, risk management subfield (ID number covered)']]},
  {g:'cert', t:'A40 Accounting, Ajun Aktuaris exam', m:'Persatuan Aktuaris Indonesia, March 2026', items:[['cert_a40','PAI letter confirming A40 Accounting as passed, credited through university course equivalency (candidate number blurred)']]},
  {g:'cert', t:'EnglishScore Core Skills, CEFR B1 (380)', m:'British Council, February 2026', items:[['cert_eng','EnglishScore certificate: overall 380, CEFR B1']]},
  {g:'ip', tile:['EC00202202214', 'DJKI, 2022'], t:'Copyright: voltaic-cell teaching aid using Lusi Island sediment', m:'DJKI, 2022, application EC00202202214, with my teachers', items:[['ip_lusi','SINTA record of the copyright: granted, with the full list of inventors']]},
@@ -3248,6 +3418,7 @@ var CERTS = [
  {g:'award', t:'PKM research grant, Social Sciences and Humanities', m:'Belmawa, Kemdiktisaintek, 2025', items:[['cert_pkm25','Funding certificate, PKM-RSH 2025']]},
  {g:'award', t:'PKM research grant, Social Sciences and Humanities', m:'Belmawa, Kemdiktisaintek, 2024', items:[['cert_pkm24','Funding certificate, PKM-RSH 2024']]},
  {g:'award', t:'Community service grant (ABMAS), team member', m:'Rector\u2019s decree, ITS, 2025', items:[['cert_abmas','Rector\u2019s decree on ITS community service grant recipients, Batch 1 2025, first page']]},
+ {g:'training', t:'Claude 101 and Claude Code 101', m:'Claude Academy, October 2026', x:'2 badges', items:[['cert_claude101','Claude 101 course completion badge, Claude Academy, 12 October 2026'],['cert_claudecode101','Claude Code 101 course completion badge, Claude Academy, 12 October 2026']]},
  {g:'training', t:'12+ Essential Skills, National Internship Program', m:'GNIK with the Ministry of Manpower, 2026', x:'8 modules', items:GNIK.map(function(n, i){ return ['cert_gnik' + (i + 1), n[0] + ', score ' + n[1]]; })},
  {g:'training', t:'Organizational management training (PMO)', m:'HIMASAKTA ITS, November 2024', items:[['cert_pmo','Pelatihan Manajerial Organisasi, 16–17 November 2024']]},
  {g:'training', t:'Basic student management training (LKMM-TD)', m:'HIMASAKTA ITS, 2023', items:[['cert_lkmm','LKMM-TD certificate, May 2023']]},
@@ -3262,15 +3433,20 @@ var CERTS = [
  {g:'org', t:'Staff, BIMITS ITS', m:'Certificate, 2023', items:[['cert_org_bim','BIMITS staff certificate, 2023']]}
 ];
 var TRACK = [
- {group:'Study', rows:[{label:'S.Aktr. Actuarial Science, ITS', sub:'Aug 2022 – Aug 2026', segs:[['2022-08','2026-08','study','Actuarial Science, ITS']]}]},
- {group:'Work', rows:[{label:'OJK East Java', sub:'Intern, Feb – Mar 2025', segs:[['2025-02','2025-03','work','Intern, consumer protection']]}, {label:'PT Surveyor Indonesia', sub:'Intern, Sep 2026 – Mar 2027', segs:[['2026-09','2027-03','work','Technical support intern']]}]},
- {group:'Research', rows:[{label:'PKM 2024: MSME resilience', sub:'Apr – Oct 2024', segs:[['2024-04','2024-10','research','First author, national research grant']]}, {label:'PKM 2025: boat micro-insurance', sub:'Jul – Oct 2025', segs:[['2025-07','2025-10','research','Team lead, national research grant']]}, {label:'Thesis: BPJS Ketenagakerjaan', sub:'Jan – Jun 2026', segs:[['2026-01','2026-06','research','Undergraduate thesis']]}]},
+ {group:'Study', rows:[{logo:'its', label:'S.Aktr. Actuarial Science, ITS', sub:'Aug 2022 – Aug 2026', segs:[['2022-08','2026-08','study','Actuarial Science, ITS']]}]},
+ {group:'Work', rows:[{logo:'ojk', label:'OJK East Java', sub:'Intern, Feb – Mar 2025', segs:[['2025-02','2025-03','work','Intern, consumer protection']]}, {logo:'ptsi', label:'PT Surveyor Indonesia', sub:'Intern, Sep 2026 – Mar 2027', segs:[['2026-09','2027-03','work','Technical support intern']]}]},
+ {group:'Research', rows:[{logo:'pkm24', label:'PKM 2024: MSME resilience', sub:'Apr – Oct 2024', segs:[['2024-04','2024-10','research','First author, national research grant']]}, {logo:'pkm25', label:'PKM 2025: boat micro-insurance', sub:'Jul – Oct 2025', segs:[['2025-07','2025-10','research','Team lead, national research grant']]}, {logo:'its_mark', label:'Thesis: BPJS Ketenagakerjaan', sub:'Jan – Jun 2026', segs:[['2026-01','2026-06','research','Undergraduate thesis']]}]},
  {group:'Leadership', rows:[
-   {label:'KSN ITS', sub:'Intern staff, database staff, head of database', segs:[['2023-01','2023-12','lead1','Intern staff, 2023'],['2024-01','2024-12','lead2','Database staff, 2024'],['2025-01','2025-12','lead3','Head of the Database Division, 2025']]},
-   {label:'BEM ITS', sub:'Staff, then director general', segs:[['2023-08','2024-12','lead2','Staff'],['2025-01','2026-03','lead3','Director General']]},
-   {label:'HIMASAKTA ITS', sub:'Academic and professional staff', segs:[['2024-01','2024-12','lead2','Staff, led APEC']]},
-   {label:'LKKI Aktuaria', sub:'Staff, then deputy coordinator', segs:[['2023-01','2023-12','lead1','Staff, 2023'],['2024-01','2024-12','lead2','Deputy coordinator, 2024']]},
-   {label:'BIMITS ITS', sub:'Internal affairs staff', segs:[['2023-01','2023-12','lead1','Staff, 2023']]}]}
+   {logo:'ksn', label:'KSN ITS', sub:'Intern staff, database staff, head of database', segs:[['2023-01','2023-12','lead1','Intern staff, 2023'],['2024-01','2024-12','lead2','Database staff, 2024'],['2025-01','2025-12','lead3','Head of the Database Division, 2025']]},
+   {logo:'bem', label:'BEM ITS', sub:'Staff, then director general', segs:[['2023-08','2024-12','lead2','Staff'],['2025-01','2026-03','lead3','Director General']]},
+   {logo:'hima', label:'HIMASAKTA ITS', sub:'Academic and professional staff', segs:[['2024-01','2024-12','lead2','Staff, led APEC']]},
+   {logo:'lkki', label:'LKKI Aktuaria', sub:'Staff, then deputy coordinator', segs:[['2023-01','2023-12','lead1','Staff, 2023'],['2024-01','2024-12','lead2','Deputy coordinator, 2024']]},
+   {logo:'bimits', label:'BIMITS ITS', sub:'Internal affairs staff', segs:[['2023-01','2023-12','lead1','Staff, 2023']]}]},
+ {group:'Milestones', rows:[{icon:'award', label:'Awards and certifications', sub:'Competition, exams and certificates', marks:[
+   ['2024-05','trophy','MCF finalist','Finalist, Actuarial Case Competition, MCF ITB 2024',0],
+   ['2026-03','badge','A40','A40 Accounting, Persatuan Aktuaris Indonesia, March 2026',0],
+   ['2026-10','spark','Claude','Claude 101 and Claude Code 101, Claude Academy, October 2026',0],
+   ['2026-11','shield','LSP ITS','Risk management competency, KKNI level 4, LSP P1 ITS, November 2026',1]]}]}
 ];
 
 /* =============================== lightbox =============================== */
@@ -3757,7 +3933,10 @@ var I18N = window.__I18N_DATA || (window.__I18N_DATA = {});   /* one file per la
   function restore(){ numDone = new WeakSet(); orig.forEach(function(k, t){ if (!t.isConnected) return; for (var id in k) { if (id === 'html') t.innerHTML = k[id]; else if (id === 'text') t.nodeValue = k[id]; else t.setAttribute(id.slice(5), k[id]); } }); orig.clear(); }
   var obs = new MutationObserver(function(recs){
     if (busy || cur === 'en') return; busy = true; var roots = [];
-    recs.forEach(function(r){ orig.delete(r.target); numDone.delete(r.target); var el = r.type === 'characterData' ? r.target.parentNode : r.target; if (el) roots.push(el); });
+    recs.forEach(function(r){
+      /* an icon added in front of a button's text is not new text: keep what the button said before translation */
+      if (r.type === 'childList' && !r.removedNodes.length && r.addedNodes.length && Array.prototype.every.call(r.addedNodes, function(n){ return n.nodeType === 1 && n.classList && n.classList.contains('ic'); })) return;
+      orig.delete(r.target); numDone.delete(r.target); var el = r.type === 'characterData' ? r.target.parentNode : r.target; if (el) roots.push(el); });
     roots.forEach(function(el){ if (el.isConnected) translate(el); });
     obs.takeRecords(); busy = false;
   });
@@ -3921,6 +4100,7 @@ var NUMS = {
  kartal:[['0.734','RMSE of the chosen SARIMA model'],['8','seasonal ARIMA models compared'],['24','months forecast, 2015 and 2016']],
  arma:[['3.309','MSE of the hand forecasts'],['5.068','MSE of the software forecasts'],['0.7788','estimated AR coefficient φ']],
  btc:[['−5.02%','average daily VaR at 90%'],['−6.55%','average daily VaR at 95%'],['1,000','repeated simulations']],
+ iclean:[['7+1','free wash after seven, tracked by plate'],['5','screens: cashier, queue, dashboard, today and stock'],['2','roles with their own PIN: owner and cashier']],
  thesis:[['5.37 × 10<sup>−17</sup>','largest gap between Panjer and FFT'],['66','months of JKK and JKM claims'],['10','distributions fitted: 4 count, 6 size']],
  zencare:[['Rp6,190','ZenCare premium a month'],['150%','RBC target'],['2','products: ZenCare and ZenCarePlus']],
  pkm:[['Rp13,735.21','gross premium per fisherman a month'],['93','of 569 fishermen surveyed'],['75%','of the premium set aside for claims']],
@@ -3939,6 +4119,7 @@ var GLYPH = {
  kartal:'<path class="g-m" d="M4 58H96"/><path class="g-l" d="M4 46 12 32 20 48 28 28 36 46 44 24 52 42 60 20"/><path class="g-l g-dash" d="M60 20 68 38 76 16 84 34 92 12"/>',
  arma:'<path class="g-a" d="M54 30 96 12V52Z"/><path class="g-l" d="M4 38 13 28 21 42 30 30 38 40 46 26 54 30"/><path class="g-l g-dash" d="M54 30 96 32"/>',
  btc:'<path class="g-a" d="M4 56C26 56 32 10 50 10S74 56 96 56Z"/><svg x="4" y="0" width="23" height="64" viewBox="4 0 23 64"><path class="g-ra" d="M4 56C26 56 32 10 50 10S74 56 96 56Z"/></svg><path class="g-l" d="M4 56C26 56 32 10 50 10S74 56 96 56"/><path class="g-r" d="M27 8V57"/>',
+ iclean:'<path class="g-al" d="M28 4H68V58L63 54 58 58 53 54 48 58 43 54 38 58 33 54 28 58Z"/><path class="g-m" d="M35 15H61M35 23H61M35 31H53"/><path class="g-l" d="M35 43H61"/><path class="g-f" d="M84 18C84 18 75 30 75 37A9 9 0 0 0 93 37C93 30 84 18 84 18Z"/>',
  thesis:'<path class="g-a" d="M4 58C16 58 18 14 32 10S54 40 68 50C78 56 88 57.5 96 58Z"/><svg x="68" y="0" width="28" height="64" viewBox="68 0 28 64"><path class="g-ra" d="M4 58C16 58 18 14 32 10S54 40 68 50C78 56 88 57.5 96 58Z"/></svg><path class="g-l" d="M4 58C16 58 18 14 32 10S54 40 68 50C78 56 88 57.5 96 58"/><path class="g-r" d="M68 6V59"/>',
  zencare:'<path class="g-al" d="M50 4 78 13V32C78 46 64 56 50 61 36 56 22 46 22 32V13Z"/><path class="g-f" d="M38 48V37h6v11zM47 48V29h6v19zM56 48V21h6v27z"/>',
  pkm:'<path class="g-f" d="M14 40H86L76 52H24Z"/><path class="g-l" d="M48 10V40"/><path class="g-al" d="M52 12 72 36H52Z"/><path class="g-l" d="M4 60q5-5 10 0t10 0 10 0 10 0 10 0 10 0 10 0 10 0 10 0"/>',
@@ -4013,6 +4194,8 @@ function pfigHTML(id){ var f = PFIG[id]; if (!f) return '';
     h += f.rows.map(function(r){ return '<div class="pf-srow"><div class="pf-sname"><span>' + esc(r[0]) + '</span><b translate="no">' + esc(r[1]) + '</b></div><div class="pf-stack" style="--of:' + (sumOf(r[2]) / top).toFixed(4) + '" aria-hidden="true">' + r[2].map(function(v, i){ return '<i class="pf-s' + (i + 1) + '" style="--v:' + v + '"></i>'; }).join('') + '</div>' +
       '<div class="pf-vals">' + r[3].map(function(t, i){ return '<span translate="no"><i class="pf-s' + (i + 1) + '" aria-hidden="true"></i>' + esc(t) + '</span>'; }).join('') + '</div></div>'; }).join(''); }
   return h + '<p class="pf-note">' + esc(f.note) + '</p></figure>'; }
+/* shared with the motion script, which draws the icons on buttons */
+window.GLYPH = GLYPH; window.BY_ID = BY_ID; window.ICP = ICP; window.icSvg = icSvg;
 function domainLabel(k){ return DOMAINS.filter(function(d){ return d.key === k; })[0].label; }
 function figHTML(n, cls){ var len = n[0].replace(/<[^>]+>/g, '').length; return '<span class="' + cls + (len >= 10 ? ' s' : len >= 7 ? ' m' : '') + '"' + (n[2] ? '' : ' translate="no"') + '>' + n[0] + '</span>'; }
 function plateHTML(p){ var n = (NUMS[p.id] || [[esc(p.key), '']])[0];
@@ -4042,12 +4225,12 @@ function showProject(id){
   var tags = [domainLabel(p.domain), ROLE_TEXT[p.role]]; if (p.tools) tags.push(p.tools);
   var mail = 'mailto:naufalabdul11@gmail.com?subject=' + encodeURIComponent('Report request: ' + p.title);
   var list = p.ordered ? 'ol' : 'ul', nums = (NUMS[p.id] || []).slice(1);
-  var html = '<div class="pdetail-top"><a class="backlink" href="#projects">All projects</a><span class="pnav"><a class="btn btn-small" href="#projects/' + prev.id + '">Previous</a><a class="btn btn-small" href="#projects/' + next.id + '">Next</a></span></div>' +
+  var html = '<div class="pdetail-top"><a class="btn btn-small backlink" data-ic="arrowL" href="#projects">All projects</a><span class="pnav"><a class="btn btn-small" data-ic="chevL" href="#projects/' + prev.id + '">Previous</a><a class="btn btn-small" data-ic="chevR" href="#projects/' + next.id + '">Next</a></span></div>' +
     '<article class="pdetail"><header class="pd-head"><div class="pd-plate">' + plateHTML(p) + '</div>' +
     '<div class="pd-intro"><p class="d-meta">' + esc(p.context) + ', ' + esc(p.when) + '</p><h1 class="vtitle">' + esc(p.title) + '</h1>' +
     '<ul class="tags">' + tags.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
     (nums.length ? '<dl class="keyfigs">' + nums.map(function(n){ return '<div><dt>' + esc(n[1]) + '</dt><dd translate="no">' + n[0] + '</dd></div>'; }).join('') + '</dl>' : '') +
-    '<div class="d-actions">' + (p.link ? '<a class="btn btn-solid btn-small" href="' + p.link + '" target="_blank" rel="noopener">' + esc(p.linkText || 'Open') + '</a>' : '') + (p.model ? '<a class="btn btn-solid btn-small" href="' + p.model + '">Try the model</a>' : '') + (p.noReq ? '' : '<a class="btn btn-small" href="' + mail + '">' + esc(p.req || 'Request the full report') + '</a>') + '</div></div></header>' +
+    '<div class="d-actions">' + (p.link ? '<a class="btn btn-solid btn-small" data-ic="external" href="' + p.link + '" target="_blank" rel="noopener">' + esc(p.linkText || 'Open') + '</a>' : '') + (p.model ? '<a class="btn btn-solid btn-small" data-ic="model:' + p.model.split('/').pop() + '" href="' + p.model + '">Try the model</a>' : '') + (p.noReq ? '' : '<a class="btn btn-small" data-ic="mail" href="' + mail + '">' + esc(p.req || 'Request the full report') + '</a>') + '</div></div></header>' +
     '<div class="pd-body"><div class="pbody"><h4>The question</h4><p>' + esc(p.question) + '</p><h4>' + (p.role === 'solo' ? 'What I did' : 'What we did') + '</h4><' + list + '>' + p.did.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</' + list + '>' +
     '<h4>Result</h4><ul>' + p.outcome.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' + pfigHTML(p.id) + '<h4>My part</h4><p>' + esc(p.part) + '</p></div>' +
     '<aside class="pside"><h4>Documents</h4><div class="pdocs">' + docs.map(function(d, k){ return '<button type="button" class="pdoc" data-di="' + k + '" aria-label="Enlarge ' + esc(d.cap) + '"><img alt="" loading="lazy" decoding="async" src="' + img(d.id) + '"><span>' + esc(d.label) + '</span></button>'; }).join('') + '</div>' +
@@ -4065,11 +4248,11 @@ function starl(st){ var lab = ['Situation','Task','Action','Result','Learning'];
 $('#leadEntries').innerHTML = LEAD.map(function(L){
   return '<div class="entry"><div class="entry-when">' + esc(L.when) + '</div><div><div class="entry-head">' + (L.logo ? '<img class="org" src="' + img(L.logo) + '" alt="" height="44">' : '') + '<div><h3>' + esc(L.title) + '</h3></div></div>' +
     L.roles.map(function(R){ return '<div class="role-block"><div class="role-line">' + (R.cab ? '<span class="cab"><img src="' + img(R.cab) + '" alt="">' + esc(R.cabName) + '</span>' : '') + '<b>' + esc(R.role) + '</b><span class="muted">(' + esc(R.year) + ')</span></div><ul class="pts">' + R.pts.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>'; }).join('') +
-    '<p class="more-row lead-more"><button type="button" class="btn btn-small lead-tog" aria-expanded="false">Show details</button></p>' +
+    '<p class="more-row lead-more"><button type="button" class="btn btn-small lead-tog" data-ic="chevDown" aria-expanded="false"><span class="lt-t">Show details</span></button></p>' +
     '<div class="strip" data-gal="' + L.gal + '" aria-label="' + esc(L.title) + ' photos and documents"></div></div></div>';
 }).join('');
 /* on a phone the leadership entries show their roles first; the bullet points open per organisation */
-$('#leadEntries').addEventListener('click', function(e){ var b = e.target.closest('.lead-tog'); if (!b) return; var open = b.closest('.entry').classList.toggle('open'); b.setAttribute('aria-expanded', String(open)); b.textContent = open ? 'Hide details' : 'Show details'; });
+$('#leadEntries').addEventListener('click', function(e){ var b = e.target.closest('.lead-tog'); if (!b) return; var open = b.closest('.entry').classList.toggle('open'); b.setAttribute('aria-expanded', String(open)); var lt = b.querySelector('.lt-t') || b; lt.textContent = open ? 'Hide details' : 'Show details'; });
 $all('#view-experience .strip[data-gal]').forEach(fillStrip);
 (function(){
   var order = ['chair','vice','coord','deputy','sec','senior','staff'], cnt = {}, colors = {chair:'var(--deep)', vice:'var(--lead3)', coord:'var(--accent)', deputy:'var(--sky)', sec:'var(--lead2)', senior:'var(--lead1)', staff:'var(--band)'};
@@ -4092,7 +4275,8 @@ $all('#view-experience .strip[data-gal]').forEach(fillStrip);
   $('#methods').innerHTML = '<li class="m-head" aria-hidden="true"><span>Method, and the projects that used it</span><span>Projects</span></li>' + METHODS.map(function(m, mi){ var names = m.ids.map(function(id){ return SHORT[id] || BY_ID[id].title; }); return '<li><button type="button" class="m-btn" data-method="' + m.key + '" title="Show these projects"><span class="m-lab"><b>' + esc(m.label) + '</b><small>' + esc(names.join(' · ')) + '</small></span><span class="m-bar" aria-hidden="true"><i style="--i:' + mi + ';width:' + (m.ids.length / max * 100).toFixed(1) + '%"></i></span><span class="m-n">' + m.ids.length + ' project' + (m.ids.length > 1 ? 's' : '') + '</span></button></li>'; }).join('');
   $('#methods').addEventListener('click', function(e){ var b = e.target.closest('[data-method]'); if (!b) return; state.method = b.getAttribute('data-method'); state.domain = 'all'; state.led = false; location.hash = '#projects'; });
   var counts = {}; CERTS.forEach(function(c){ counts[c.g] = (counts[c.g] || 0) + 1; });
-  $('#certChips').innerHTML = CG.map(function(g, i){ return '<button type="button" class="chip" data-cg="' + g[0] + '" aria-pressed="' + (i === 0) + '">' + g[1] + ' <span class="n">' + (g[0] === 'all' ? CERTS.length : counts[g[0]] || 0) + '</span></button>'; }).join('');
+  var CGI = {all:'grid', cert:'badge', award:'trophy', training:'cap', org:'fileSign', ip:'copyright'};
+  $('#certChips').innerHTML = CG.map(function(g, i){ return '<button type="button" class="chip" data-cg="' + g[0] + '" data-ic="' + CGI[g[0]] + '" aria-pressed="' + (i === 0) + '">' + g[1] + ' <span class="n">' + (g[0] === 'all' ? CERTS.length : counts[g[0]] || 0) + '</span></button>'; }).join('');
   var kindLabel = {cert:'Certification', award:'Award', training:'Training', org:'Appointment', ip:'Copyright'};
   var grid = $('#certGrid');
   grid.innerHTML = CERTS.map(function(c, i){ return '<button type="button" class="cert" data-c="' + i + '" data-g="' + c.g + '">' + (c.tile ? '<span class="cert-img ip-tile"><span class="ip-mark" aria-hidden="true">©</span><span class="ip-no notranslate" translate="no">' + c.tile[0] + '</span><span class="ip-by">' + c.tile[1] + '</span>' : '<span class="cert-img"><img alt="" loading="lazy" decoding="async" src="' + img(c.items[0][0]) + '">') + '<span class="kind">' + kindLabel[c.g] + '</span>' + (c.x ? '<em>' + esc(c.x) + '</em>' : '') + '</span><span class="cert-t">' + esc(c.t) + '</span><span class="cert-m">' + esc(c.m) + '</span></button>'; }).join('');
@@ -4111,9 +4295,12 @@ $all('#view-experience .strip[data-gal]').forEach(fillStrip);
   $('#track').style.setProperty('--yrs', (SPAN / 12).toFixed(3));
   for (var y = 0; y * 12 < SPAN; y++) html += '<span style="left:' + (y * 12 / SPAN * 100).toFixed(3) + '%">' + (START + y) + '</span>';
   html += '</div>';
-  TRACK.forEach(function(g){ html += '<div class="t-group">' + esc(g.group) + '</div>'; g.rows.forEach(function(r){
-    html += '<div class="t-label">' + esc(r.label) + '<small>' + esc(r.sub) + '</small></div><div class="t-lane" style="--today:' + today.toFixed(3) + '%" role="img" aria-label="' + esc(r.label + ': ' + r.sub) + '">';
-    r.segs.forEach(function(s){ var a = idx(s[0]), b = idx(s[1]) + 1; html += '<span class="t-bar ' + s[2] + '" title="' + esc(s[3]) + '" style="--i:' + row + ';left:' + (a / SPAN * 100).toFixed(3) + '%;width:calc(' + ((b - a) / SPAN * 100).toFixed(3) + '% - 2px)"></span>'; });
+  var GI = {Study:'cap', Work:'briefcase', Research:'flask', Leadership:'flag', Milestones:'trophy'};
+  TRACK.forEach(function(g){ html += '<div class="t-group">' + icSvg(GI[g.group]) + esc(g.group) + '</div>'; g.rows.forEach(function(r){
+    html += '<div class="t-head"><span class="t-logo" aria-hidden="true">' + (r.logo ? '<img src="img/lg_' + r.logo + '.webp" alt="" loading="lazy" decoding="async">' : icSvg(r.icon || 'award')) + '</span><div class="t-label">' + esc(r.label) + '<small>' + esc(r.sub) + '</small></div></div>' +
+      '<div class="t-lane' + (r.marks ? ' t-marks' : '') + '" style="--today:' + today.toFixed(3) + '%" role="img" aria-label="' + esc(r.label + ': ' + r.sub) + '">';
+    (r.marks || []).forEach(function(m){ var a = idx(m[0]) + .5; html += '<span class="t-mark r' + (m[4] || 0) + '" style="left:' + (a / SPAN * 100).toFixed(3) + '%" title="' + esc(m[3]) + '">' + icSvg(m[1]) + '<span class="t-mlab">' + esc(m[2]) + '</span></span>'; });
+    (r.segs || []).forEach(function(s){ var a = idx(s[0]), b = idx(s[1]) + 1; html += '<span class="t-bar ' + s[2] + '" title="' + esc(s[3]) + '" style="--i:' + row + ';left:' + (a / SPAN * 100).toFixed(3) + '%;width:calc(' + ((b - a) / SPAN * 100).toFixed(3) + '% - 2px)"></span>'; });
     html += '</div>'; row++; }); });
   $('#track').innerHTML = html;
 })();
@@ -5393,6 +5580,97 @@ root.removeAttribute('data-early'); root.removeAttribute('data-early-sub');
   topBtn.addEventListener('click', function(){ window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'}); });
   var tk = false, onScroll = function(){ if (tk) return; tk = true; requestAnimationFrame(function(){ var h = d.documentElement, max = h.scrollHeight - h.clientHeight, y = window.pageYOffset || h.scrollTop; bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')'; topBtn.classList.toggle('show', y > 500); tk = false; }); };
   window.addEventListener('scroll', onScroll, {passive:true}); window.addEventListener('resize', onScroll); onScroll();
+
+  /* dot field behind the hero: a quiet grid in the accent colour that brightens around a mouse pointer */
+  (function(){
+    var home = d.getElementById('view-home'), heroEl = home && qs('.hero', home); if (!heroEl) return;
+    var cv = d.createElement('canvas'); cv.className = 'hero-dots'; cv.setAttribute('aria-hidden', 'true'); home.insertBefore(cv, home.firstChild);
+    var ctx = cv.getContext && cv.getContext('2d'); if (!ctx) return;
+    var W = 0, H = 0, dots = [], P = {x:-1e4, y:-1e4}, running = false, rgb = '31,95,174';
+    var fine = !reduce && window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    function readColour(){ var h = getComputedStyle(d.documentElement).getPropertyValue('--accent').trim(), m = /^#([0-9a-f]{6})$/i.exec(h);
+      if (m){ var n = parseInt(m[1], 16); rgb = (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255); } }
+    function draw(){
+      ctx.clearRect(0, 0, W, H); var more = false, lit = [];
+      ctx.fillStyle = 'rgba(' + rgb + ',.17)'; ctx.beginPath();
+      for (var i = 0; i < dots.length; i++){ var o = dots[i], dx = o.x - P.x, dy = o.y - P.y, dist = Math.sqrt(dx * dx + dy * dy), tg = dist < 160 ? 1 - dist / 160 : 0;
+        o.s += (tg - o.s) * .16; if (Math.abs(tg - o.s) > .01) more = true;
+        if (o.s < .01){ ctx.moveTo(o.x + 1, o.y); ctx.arc(o.x, o.y, 1, 0, 6.2832); } else lit.push(o); }
+      ctx.fill();
+      for (var j = 0; j < lit.length; j++){ var q = lit[j]; ctx.fillStyle = 'rgba(' + rgb + ',' + (.17 + q.s * .6).toFixed(3) + ')'; ctx.beginPath(); ctx.arc(q.x, q.y, 1 + q.s * 2.2, 0, 6.2832); ctx.fill(); }
+      running = more && fine; if (running) requestAnimationFrame(draw); }
+    function kick(){ if (!running){ running = true; requestAnimationFrame(draw); } }
+    function size(){ var w = home.clientWidth, h = heroEl.offsetTop + heroEl.offsetHeight + 30; if (!w || !heroEl.offsetHeight) return;
+      if (w === W && Math.abs(h - H) < 2 && dots.length) return;
+      W = w; H = h; var r = Math.min(window.devicePixelRatio || 1, 2); cv.width = Math.round(W * r); cv.height = Math.round(H * r); cv.style.height = H + 'px'; ctx.setTransform(r, 0, 0, r, 0, 0);
+      var g = W < 700 ? 22 : 26; dots = []; for (var y = g / 2; y < H; y += g) for (var x = g / 2; x < W; x += g) dots.push({x:x, y:y, s:0}); draw(); }
+    readColour(); size();
+    if (window.ResizeObserver){ var ro = new ResizeObserver(size); ro.observe(home); ro.observe(heroEl); } else window.addEventListener('resize', size);
+    new MutationObserver(function(){ readColour(); draw(); }).observe(d.documentElement, {attributes:true, attributeFilter:['data-theme']});
+    if (window.matchMedia){ var mq = window.matchMedia('(prefers-color-scheme: dark)'); var onMq = function(){ readColour(); draw(); }; if (mq.addEventListener) mq.addEventListener('change', onMq); }
+    if (fine){
+      home.addEventListener('pointermove', function(e){ if (e.pointerType && e.pointerType !== 'mouse') return; var r = cv.getBoundingClientRect(); P = {x:e.clientX - r.left, y:e.clientY - r.top}; kick(); });
+      home.addEventListener('pointerleave', function(){ P = {x:-1e4, y:-1e4}; kick(); }); }
+  })();
+
+  /* the focus words under the name take turns */
+  qsa('[data-swap]').forEach(function(swap){ if (reduce) return;
+    var words = qsa(':scope > span', swap), wk = 0, every = +swap.getAttribute('data-every') || 2400, delay = +swap.getAttribute('data-delay') || 0;
+    if (words.length < 2) return;
+    setTimeout(function(){ setInterval(function(){ var home = d.getElementById('view-home'); if (d.hidden || (home && home.hidden)) return;
+      var cur = words[wk]; wk = (wk + 1) % words.length; var nx = words[wk];
+      cur.classList.remove('on'); cur.classList.add('out'); nx.classList.remove('out'); nx.classList.add('on');
+      setTimeout(function(){ cur.classList.remove('out'); }, 650); }, every); }, delay); });
+
+  /* home: the eight model cards, repeated so the strip can loop; the copy is hidden from keyboards and screen readers */
+  var ms = d.getElementById('modelStrip'), mtpl = d.getElementById('modelStripTpl');
+  if (ms && mtpl){ var mtrack = qs('.model-strip-track', ms), mcards = qsa('.tool-card', mtpl.content);
+    var mset = function(copy){ var g = d.createElement('div'); g.className = 'model-strip-set';
+      if (copy){ g.setAttribute('aria-hidden', 'true'); g.setAttribute('inert', ''); }
+      mcards.forEach(function(c){ var x = c.cloneNode(true); x.classList.add('ms-card'); if (copy) x.tabIndex = -1; g.appendChild(x); }); return g; };
+    mtrack.appendChild(mset(false)); mtrack.appendChild(mset(true)); }
+
+  /* icons: every element with data-ic gets the icon of its kind of target; model and project icons are the ones on their own pages */
+  var ICMAP = [['.fbtn', 'upload'], ['[data-fsample]', 'data'], ['#eqSample', 'data'], ['[data-fclear]', 'x'], ['[data-eqclear]', 'x'], ['#clearMethod', 'x'],
+    ['#fRun', 'play'], ['#eqRun', 'play'], ['#fBoot', 'repeat'], ['#frCvBtn', 'repeat'], ['#eqTemplate', 'download'], ['#eqToFc', 'model:forecast'],
+    ['#frSeed', 'shuffle'], ['#dsPasteBtn', 'check'], ['.mode-tabs .mode-tab:first-child', 'data'], ['.mode-tabs .mode-tab:nth-child(2)', 'sliders']];
+  function icFor(spec){ var k = spec.split(':')[0], id = spec.split(':')[1];
+    if (k === 'project' && window.GLYPH && GLYPH[id]){ var dm = (window.BY_ID && BY_ID[id] && BY_ID[id].domain) || 'ins';
+      return '<span class="ic ic-art f-' + dm + '" aria-hidden="true"><svg viewBox="0 0 100 64" focusable="false">' + GLYPH[id] + '</svg></span>'; }
+    if (k === 'model'){ var s = qs('#mPicker a[href="#models/' + id + '"] svg'); return s ? '<span class="ic ic-art" aria-hidden="true">' + s.outerHTML + '</span>' : icSvg('model'); }
+    if (k === 'org') return '<span class="ic ic-logo" aria-hidden="true"><img src="img/lg_' + id + '.webp" alt=""></span>';
+    return icSvg(k); }
+  function decorate(){
+    ICMAP.forEach(function(m){ qsa(m[0]).forEach(function(el){ if (!el.hasAttribute('data-ic')) el.setAttribute('data-ic', m[1]); }); });
+    qsa('[data-ic]').forEach(function(el){ var f = el.firstElementChild; if (f && f.classList.contains('ic')) return; var h = icFor(el.getAttribute('data-ic')); if (h) el.insertAdjacentHTML('afterbegin', h); }); }
+  decorate();
+  var icTick = false;
+  new MutationObserver(function(){ if (icTick) return; icTick = true; requestAnimationFrame(function(){ icTick = false; decorate(); }); }).observe(d.body, {childList:true, subtree:true});
+
+  /* filter chips: one background slides from the old choice to the new one, even when the chips are drawn again */
+  function pillFor(box){ var last = null;
+    function put(el, r){ el.style.transform = 'translate(' + r.x + 'px,' + r.y + 'px)'; el.style.width = r.w + 'px'; el.style.height = r.h + 'px'; }
+    function place(anim){
+      var pill = null; for (var c = box.firstChild; c; c = c.nextSibling) if (c.nodeType === 1 && c.classList.contains('chip-pill')) { pill = c; break; }
+      if (!pill){ pill = d.createElement('span'); pill.className = 'chip-pill'; pill.setAttribute('aria-hidden', 'true'); box.insertBefore(pill, box.firstChild);
+        if (last){ pill.style.transition = 'none'; put(pill, last); void pill.offsetWidth; pill.style.transition = ''; } else anim = false; }
+      var on = qs('.chip[aria-pressed="true"]', box);
+      if (!on){ pill.style.opacity = '0'; return; }
+      if (!on.offsetWidth) return;
+      var bb = box.getBoundingClientRect(), cb = on.getBoundingClientRect(), r = {x:cb.left - bb.left - box.clientLeft, y:cb.top - bb.top - box.clientTop, w:cb.width, h:cb.height};
+      if (!anim || reduce){ pill.style.transition = 'none'; put(pill, r); void pill.offsetWidth; pill.style.transition = ''; } else put(pill, r);
+      pill.style.opacity = ''; last = r; }
+    box.classList.add('has-pill');
+    new MutationObserver(function(){ place(true); }).observe(box, {childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:['aria-pressed']});
+    if (window.ResizeObserver) new ResizeObserver(function(){ place(false); }).observe(box); else window.addEventListener('resize', function(){ place(false); });
+    place(false); }
+  qsa('.chips').forEach(pillFor);
+
+  /* skills: the tools table, repeated as a strip of logos that scrolls past */
+  var strip = d.getElementById('toolStrip');
+  if (strip){ var esc2 = function(s){ return s.replace(/[&<>"]/g, function(c){ return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[c]; }); };
+    var items = qsa('.tools .tool').map(function(tl){ var lg = qs('.tool-logos', tl); return '<span class="tool-strip-item">' + (lg ? lg.innerHTML : '') + esc2(tl.textContent.replace(/\s+/g, ' ').trim()) + '</span>'; }).join('');
+    strip.innerHTML = items + items; }
 
   var after = function(){ armHero(); mark(); onScroll(); };
   window.addEventListener('hashchange', function(){ setTimeout(after, 80); });
