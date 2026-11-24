@@ -1007,6 +1007,41 @@ html[data-early-sub] #mPicker, html[data-early-sub] #mPrompt, html[data-early-su
 #toTop.show{ opacity:1; transform:none; pointer-events:auto; }
 #toTop:hover{ background:var(--accent-soft); }
 #toTop svg{ width:20px; height:20px; }
+/* ---- chat assistant (shown only when CHAT_URL is set) ---- */
+body.has-chat #toTop{ bottom:84px; }
+#chatBtn{ position:fixed; right:22px; bottom:22px; z-index:901; display:flex; align-items:center; gap:8px; height:48px; padding:0 18px 0 14px; border:0; border-radius:999px; background:var(--accent); color:var(--on-accent, #fff); font:inherit; font-weight:650; cursor:pointer; box-shadow:0 10px 26px rgba(12,27,46,.22); }
+#chatBtn svg{ width:22px; height:22px; flex:none; }
+#chatBtn[aria-expanded="true"]{ opacity:0; pointer-events:none; }
+#chatBox{ position:fixed; right:22px; bottom:22px; z-index:902; width:min(380px, calc(100vw - 32px)); height:min(560px, calc(100vh - 110px)); display:flex; flex-direction:column; background:var(--surface); color:var(--ink); border:1px solid var(--rule); border-radius:18px; box-shadow:0 22px 60px rgba(12,27,46,.28); overflow:hidden; }
+#chatBox[hidden]{ display:none; }
+.chat-head{ display:flex; align-items:center; gap:10px; padding:14px 14px 12px 16px; border-bottom:1px solid var(--rule); background:var(--band); }
+.chat-head b{ display:block; font-size:1rem; }
+.chat-head small{ display:block; color:var(--ink-2); font-size:.78rem; line-height:1.3; }
+.chat-head .chat-x{ margin-left:auto; width:34px; height:34px; border:0; border-radius:50%; background:transparent; color:var(--ink-2); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.chat-head .chat-x:hover{ background:var(--accent-soft); color:var(--ink); }
+.chat-head .chat-x svg{ width:18px; height:18px; }
+.chat-log{ flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; }
+.chat-msg{ max-width:86%; padding:9px 12px; border-radius:14px; font-size:.93rem; line-height:1.45; white-space:pre-wrap; overflow-wrap:anywhere; }
+.chat-msg.bot{ align-self:flex-start; background:var(--band); border-bottom-left-radius:4px; }
+.chat-msg.me{ align-self:flex-end; background:var(--accent); color:var(--on-accent, #fff); border-bottom-right-radius:4px; }
+.chat-msg.err{ align-self:flex-start; background:transparent; border:1px dashed var(--rule); color:var(--ink-2); }
+.chat-msg a{ color:inherit; text-decoration:underline; }
+.chat-dots span{ display:inline-block; width:6px; height:6px; margin:0 2px; border-radius:50%; background:var(--ink-2); animation:chatDot 1s infinite ease-in-out; }
+.chat-dots span:nth-child(2){ animation-delay:.15s; } .chat-dots span:nth-child(3){ animation-delay:.3s; }
+@keyframes chatDot{ 0%,80%,100%{ opacity:.25; transform:translateY(0); } 40%{ opacity:1; transform:translateY(-3px); } }
+.chat-sugg{ display:flex; flex-wrap:wrap; gap:6px; padding:0 14px 10px; }
+.chat-sugg[hidden]{ display:none; }
+.chat-sugg button{ border:1px solid var(--rule); background:var(--surface); color:var(--ink); border-radius:999px; padding:6px 11px; font:inherit; font-size:.8rem; cursor:pointer; }
+.chat-sugg button:hover{ background:var(--accent-soft); }
+.chat-form{ display:flex; gap:8px; padding:10px 12px; border-top:1px solid var(--rule); }
+.chat-form textarea{ flex:1; resize:none; height:42px; max-height:110px; overflow-y:hidden; line-height:20px; padding:10px 12px; border:1px solid var(--rule); border-radius:12px; background:var(--paper); color:var(--ink); font:inherit; font-size:.93rem; }
+.chat-form textarea:focus{ outline:2px solid var(--accent); outline-offset:-1px; }
+.chat-form button{ flex:none; width:42px; height:42px; border:0; border-radius:12px; background:var(--accent); color:var(--on-accent, #fff); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.chat-form button[disabled]{ opacity:.5; cursor:default; }
+.chat-form button svg{ width:18px; height:18px; }
+.chat-note{ margin:0; padding:0 14px 10px; color:var(--ink-2); font-size:.72rem; line-height:1.35; }
+@media (max-width:560px){ #chatBtn .chat-lbl{ display:none; } #chatBtn{ padding:0; width:52px; justify-content:center; } #chatBox{ right:8px; left:8px; bottom:8px; width:auto; height:calc(100vh - 80px); } }
+@media print{ #chatBtn, #chatBox{ display:none !important; } }
 /* ---- effects: a dot field behind the hero, a status line, rotating focus words, sliding filter pills, menu underlines, a tools strip ---- */
 #view-home{ position:relative; }
 .hero-dots{ position:absolute; left:0; top:0; width:100%; height:0; pointer-events:none; z-index:0;
@@ -5700,6 +5735,61 @@ root.removeAttribute('data-early'); root.removeAttribute('data-early-sub');
 <script>
 /* ===== Visitor statistics (GoatCounter, no cookies): each in-page view is counted as a page view, under its English title ===== */
 window.addEventListener('hashchange', function(){ if (location.hash === '#toggle-goatcounter') return; try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: location.pathname + (location.hash || '#home'), title: window.NAF ? NAF.title(location.hash) : document.title }); } catch (e) {} });
+</script>
+<button id="chatBtn" type="button" aria-controls="chatBox" aria-expanded="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 10.5h7M8.5 13.8h4.5"/></svg><span class="chat-lbl">Ask about Naufal</span></button>
+<section id="chatBox" role="dialog" aria-modal="false" aria-labelledby="chatTitle" hidden>
+  <div class="chat-head"><div><b id="chatTitle">Ask about Naufal</b><small>Answers come from this portfolio and his resume.</small></div>
+    <button class="chat-x" id="chatClose" type="button" aria-label="Close chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="chat-log" id="chatLog" aria-live="polite"><p class="chat-msg bot">Hi! Ask me about Naufal's experience, projects, skills or availability.</p></div>
+  <div class="chat-sugg" id="chatSugg"><button type="button">What role is he looking for?</button><button type="button">What does he do at PT Surveyor Indonesia?</button><button type="button">What are his technical skills?</button><button type="button">How can I contact him?</button></div>
+  <form class="chat-form" id="chatForm"><textarea id="chatInput" rows="1" maxlength="500" placeholder="Type your question" aria-label="Your question"></textarea><button type="submit" id="chatSend" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+  <span id="chatPh" hidden>Type your question</span>
+  <p class="chat-note">Automatic answers that can contain mistakes. For anything important, contact Naufal directly.</p>
+</section>
+<script>
+/* ===== Chat assistant: questions go to a Google Apps Script web app that asks Gemini, answering only from Naufal's profile ===== */
+(function(){
+  'use strict';
+  var CHAT_URL = '';   /* the Apps Script web app URL (…/exec); empty keeps the assistant hidden */
+  var mock = /[?&]chat=mock\b/.test(location.search);
+  if (!CHAT_URL && !mock) return;
+  var btn = document.getElementById('chatBtn'), box = document.getElementById('chatBox'), log = document.getElementById('chatLog'),
+      form = document.getElementById('chatForm'), input = document.getElementById('chatInput'), send = document.getElementById('chatSend'), sugg = document.getElementById('chatSugg');
+  var history = [], busy = false;
+  btn.hidden = false; document.body.classList.add('has-chat');
+  var ERR = { busy:'The assistant is busy right now. Please try again in a minute.', limit:'The assistant has reached today’s limit. Please email Naufal at naufalabdul11@gmail.com.',
+              net:'Could not reach the assistant. Please check your connection, or email Naufal at naufalabdul11@gmail.com.' };
+  function msg(text, cls){ var p = document.createElement('p'); p.className = 'chat-msg ' + cls; if (cls !== 'err') p.setAttribute('translate', 'no');
+    p.textContent = text; linkify(p); log.appendChild(p); log.scrollTop = log.scrollHeight; return p; }
+  function errMsg(key){ var p = document.createElement('p'); p.className = 'chat-msg err'; p.innerHTML = '<span>' + ERR[key] + '</span>'; log.appendChild(p); log.scrollTop = log.scrollHeight; }
+  function linkify(p){ p.innerHTML = p.innerHTML.replace(/(https?:\/\/[^\s<]+|naufalabdul11\.github\.io[^\s<]*|[\w.+-]+@[\w-]+\.[\w.]+)/g, function(m){
+      var href = /@/.test(m) ? 'mailto:' + m : (/^https?:/.test(m) ? m : 'https://' + m); return '<a href="' + href.replace(/"/g, '') + '" target="_blank" rel="noopener">' + m + '</a>'; }); }
+  function open(v){ box.hidden = !v; btn.setAttribute('aria-expanded', String(v)); if (v) { input.focus(); log.scrollTop = log.scrollHeight; } else btn.focus(); }
+  btn.addEventListener('click', function(){ open(true); });
+  document.getElementById('chatClose').addEventListener('click', function(){ open(false); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !box.hidden) open(false); });
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit')); } });
+  input.addEventListener('input', function(){ input.style.height = 'auto'; var h = input.scrollHeight; input.style.height = Math.min(h, 110) + 'px'; input.style.overflowY = h > 110 ? 'auto' : 'hidden'; });
+  /* the site translator rewrites text, not placeholders: copy the translated hidden label into the placeholder */
+  var ph = document.getElementById('chatPh'); function syncPh(){ input.placeholder = ph.textContent.trim(); input.setAttribute('aria-label', ph.textContent.trim()); }
+  syncPh(); new MutationObserver(syncPh).observe(ph, { childList:true, characterData:true, subtree:true });
+  sugg.addEventListener('click', function(e){ var b = e.target.closest('button'); if (b) ask(b.textContent.trim()); });
+  form.addEventListener('submit', function(e){ e.preventDefault(); ask(input.value.trim()); });
+  function lang(){ var l = document.documentElement.lang || 'en'; return l; }
+  function ask(q){
+    if (!q || busy) return; busy = true; send.disabled = true; sugg.hidden = true;
+    msg(q, 'me'); input.value = ''; input.style.height = '';
+    var wait = document.createElement('p'); wait.className = 'chat-msg bot chat-dots'; wait.setAttribute('translate', 'no'); wait.setAttribute('aria-label', '…'); wait.innerHTML = '<span></span><span></span><span></span>'; log.appendChild(wait); log.scrollTop = log.scrollHeight;
+    var done = function(){ wait.remove(); busy = false; send.disabled = false; input.focus(); };
+    var payload = JSON.stringify({ q:q, lang:lang(), history:history.slice(-12) });
+    var req = mock ? new Promise(function(r){ setTimeout(function(){ r({ ok:true, answer:'(Mock answer) Naufal is looking for an entry-level role in risk management or actuarial work. Contact: naufalabdul11@gmail.com' }); }, 700); })
+                   : fetch(CHAT_URL, { method:'POST', body:payload, redirect:'follow' }).then(function(r){ return r.json(); });
+    req.then(function(d){ done();
+        if (d && d.ok && d.answer) { msg(d.answer, 'bot'); history.push({ role:'user', text:q }, { role:'model', text:d.answer }); }
+        else errMsg(d && (d.error === 'limit' || d.error === 'busy') ? d.error : 'net'); })
+      .catch(function(){ done(); errMsg('net'); });
+  }
+})();
 </script>
 </body>
 </html>
