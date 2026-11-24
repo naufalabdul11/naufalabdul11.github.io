@@ -5750,7 +5750,7 @@ window.addEventListener('hashchange', function(){ if (location.hash === '#toggle
 /* ===== Chat assistant: questions go to a Google Apps Script web app that asks Gemini, answering only from Naufal's profile ===== */
 (function(){
   'use strict';
-  var CHAT_URL = '';   /* the Apps Script web app URL (…/exec); empty keeps the assistant hidden */
+  var CHAT_URL = 'https://script.google.com/macros/s/AKfycbyOhzvcT-uaAtQDwEJdWPsJAtSccP8ryXJOTEgIC1ozXxg_7Ddbnmjrdv_l7PjMZGEb/exec';   /* the Apps Script web app URL (…/exec); empty keeps the assistant hidden */
   var mock = /[?&]chat=mock\b/.test(location.search);
   if (!CHAT_URL && !mock) return;
   var btn = document.getElementById('chatBtn'), box = document.getElementById('chatBox'), log = document.getElementById('chatLog'),
